@@ -6,6 +6,10 @@ lib-cov
 *.out
 *.pid
 *.gz
+*.js.map
+client.js
+server.js
+bundle.js
 
 pids
 logs

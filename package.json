@@ -1,0 +1,55 @@
+{
+  "name": "mx",
+  "version": "0.0.1",
+  "author": "Massimiliano Mantione <massimiliano.mantione@gmail.com>",
+  "description": "Metascript scratchbox (just a playground to test things).",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/massimiliano-mantione/mx.git"
+  },
+  "dependencies": {
+    "meta-script": ">=0.0.7",
+    "source-map-support": "*",
+    "express": ">3.0.0",
+    "jade": "*",
+    "primus": ">2.0.0",
+    "ws": "*",
+    "react": ">=0.8.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "~2.0.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "jshintConfig": {
+    "globals": {},
+    "browser": false,
+    "node": true,
+    "strict": false,
+    "white": true,
+    "smarttabs": true,
+    "undef": true,
+    "unused": true,
+    "onecase": true,
+    "lastsemic": true,
+    "newcap": false,
+    "maxlen": 100,
+    "indent": 2,
+    "predef": [
+      "describe",
+      "it",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach"
+    ]
+  },
+  "keywords": [
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.8"
+  }
+}
