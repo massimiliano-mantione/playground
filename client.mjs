@@ -56,50 +56,55 @@ var
 
 var chatData = {
   input: 'Nickname'
+  setInput: (text) ->
+    this.input = text
+    this.refreshView()
   log: []
+  logAppend: (message) ->
+    this.log.push message
+    this.refreshView()
+  view: null
+  refreshView: () -> do
+    if (this.view != null)
+      this.view.refresh()
+      ;this.view.setStete this
+    else
+      console.log ' *** view is null...'
 }
 
 var primus = new Primus('http://localhost:8080', {})
 
-var body = null
-
 var Body = React.createClass {
+  refresh: () ->
+    this.setState <- this.state
+
   getInitialState: () -> chatData
-  handleKeyUp: (e)->do
-    console.log 'keyUp'
-    chatData.input = e.target.value
-    if (e.keyCode == 13)
-      console.log 'Before'
-      primus.write(chatData.input)
-      chatData.input = ''
-      console.log 'After'
-    this.setState chatData
 
   handleNewMessage: (message) -> do
     chatData.log.push message
-    this.setState chatData
+    this.refresh()
 
   render: () ->
-    body = this
-    return div
+    div
       h1 'Chat example'
       input {
-        value: this.state.input
+        value: chatData.input
         onChange: (e)->
-          console.log 'onChange'
-          chatData.input = e.target.value
-          body.setState chatData
-        onKeyUp: (e) ->
-          body.handleKeyUp e
+          chatData.setInput <- e.target.value
+        onKeyUp: (e) -> do
+          if (e.keyCode == 13)
+            primus.write(chatData.input)
+            chatData.setInput <- ''
       }
-      this.props.log.map
+      chatData.log.map
         (message) -> p message
 }
+chatData.view = Body chatData
 
 primus.on
   'data'
-  (data) -> body.handleNewMessage data
+  (data) -> chatData.logAppend data
 
 React.renderComponent
-  Body chatData
+  chatData.view
   document.body
