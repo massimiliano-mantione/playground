@@ -18,7 +18,10 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "~2.0.2"
+    "should": "~2.0.2",
+    "gulp": "~3.5.2",
+    "gulp-mjs": "~0.0.1",
+    "gulp-browserify": "~0.4.5"
   },
   "scripts": {
     "test": "mocha"
@@ -46,8 +49,7 @@
       "afterEach"
     ]
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "license": "MIT",
   "engines": {
     "node": ">=0.8"
