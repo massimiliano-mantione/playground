@@ -21,7 +21,8 @@
     "should": "~2.0.2",
     "gulp": "~3.5.2",
     "gulp-mjs": "~0.0.1",
-    "gulp-browserify": "~0.4.5"
+    "gulp-browserify": "~0.4.5",
+    "gulp-nodemon": "~0.1.2"
   },
   "scripts": {
     "test": "mocha"

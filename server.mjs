@@ -14,7 +14,7 @@ app.get
   (res, rsp) -> rsp.send htmlText
 app.get
   '/client.js'
-  (res, rsp) -> rsp.sendfile './bundle.js'
+  (res, rsp) -> rsp.sendfile './client.js'
 app.get
   '/p-client.js'
   (res, rsp) -> rsp.send(primus.library())
@@ -49,4 +49,3 @@ primus.on
 
 
 server.listen(8080);
-
