@@ -17,7 +17,7 @@ gulp.task('client', function() {
 
 gulp.task('server', function() {
   return gulp.src(paths.server)
-    .pipe(mjs())
+    .pipe(mjs({debug: true}))
     .pipe(gulp.dest('.'));
 });
 
