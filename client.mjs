@@ -65,24 +65,13 @@ var chatData = {
     this.refreshView()
   view: null
   refreshView: () -> do
-    if (this.view != null)
-      this.view.refresh()
-      ;this.view.setStete this
-    else
-      console.log ' *** view is null...'
+    this.view.setState this
 }
 
 var primus = new Primus('http://localhost:8080', {})
 
 var Body = React.createClass {
-  refresh: () ->
-    this.setState <- this.state
-
   getInitialState: () -> chatData
-
-  handleNewMessage: (message) -> do
-    chatData.log.push message
-    this.refresh()
 
   render: () ->
     div
