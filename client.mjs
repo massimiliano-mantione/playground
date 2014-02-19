@@ -65,14 +65,12 @@ var chatData = {
     this.refreshView()
   view: null
   refreshView: () -> do
-    this.view.setState this
+    this.view.setState()
 }
 
 var primus = new Primus('http://localhost:8080', {})
 
 var Body = React.createClass {
-  getInitialState: () -> chatData
-
   render: () ->
     div
       h1 'Chat example'
