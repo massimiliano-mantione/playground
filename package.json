@@ -14,7 +14,8 @@
     "jade": "*",
     "primus": ">2.0.0",
     "ws": "*",
-    "react": ">=0.8.0"
+    "react": ">=0.8.0",
+    "source-map-support": "~0.2.5"
   },
   "devDependencies": {
     "mocha": "*",
