@@ -1,3 +1,5 @@
+require('source-map-support').install()
+
 var
   jade = require 'jade'
   express = require 'express'
@@ -20,7 +22,8 @@ app.get
   (res, rsp) -> rsp.send(primus.library())
 
 var connections = new Object null
-
+; for testing exceptions with source map uncomment the next line
+; console.log(connections.foo.bar)
 var Connection = (spark) -> do
   this.nick = null
   this.spark = spark
