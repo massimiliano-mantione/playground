@@ -9,13 +9,12 @@
   },
   "dependencies": {
     "meta-script": ">=0.0.7",
-    "source-map-support": "*",
+    "source-map-support": "~0.2.5",
     "express": ">3.0.0",
     "jade": "*",
     "primus": ">2.0.0",
     "ws": "*",
-    "react": ">=0.8.0",
-    "source-map-support": "~0.2.5"
+    "react": ">=0.8.0"
   },
   "devDependencies": {
     "mocha": "*",
@@ -23,7 +22,8 @@
     "gulp": "~3.5.2",
     "gulp-mjs": "~0.0.1",
     "gulp-browserify": "~0.4.5",
-    "gulp-nodemon": "~0.1.2"
+    "gulp-nodemon": "~0.1.2",
+    "stream-combiner": "0.0.4"
   },
   "scripts": {
     "test": "mocha"
