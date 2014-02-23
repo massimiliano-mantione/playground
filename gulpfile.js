@@ -2,23 +2,32 @@ var gulp = require('gulp');
 var mjs = require('gulp-mjs');
 var browserify = require('gulp-browserify');
 var nodemon = require('gulp-nodemon');
+var Combine = require('stream-combiner');
 
 var paths = {
   client: ['client.mjs'],
   server: ['server.mjs']
 };
 
+function withErrorHandling() {
+  var combined = Combine.apply(null, arguments);
+//  combined.on('error', function(err) { console.warn(err.message); });
+  return combined;
+}
+
 gulp.task('client', function() {
-  return gulp.src(paths.client)
-    .pipe(mjs())
-    .pipe(browserify({debug: true}))
-    .pipe(gulp.dest('.'));
+  return withErrorHandling(
+    gulp.src(paths.client),
+    mjs(),
+    browserify({debug: true}),
+    gulp.dest('.'));
 });
 
 gulp.task('server', function() {
-  return gulp.src(paths.server)
-    .pipe(mjs({debug: true}))
-    .pipe(gulp.dest('.'));
+  return withErrorHandling(
+    gulp.src(paths.server),
+    mjs({debug: true}),
+    gulp.dest('.'));
 });
 
 // Rerun the task when a file changes
