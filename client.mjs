@@ -3,30 +3,7 @@
   document
   alert
   arguments
-  Array
 
-meta
-  macro '<-'
-    precedence: LOW
-    arity: binary
-    expand:
-      var tuple = expr.newTuple()
-      var right = expr.argAt 1
-      loop (right) do
-        if (right == ())
-          end
-        else if (right.isCall())
-          tuple.push(right.argAt 0)
-          next(right.argAt 0)
-        else
-          tuple.push(right)
-          end
-      if (tuple.argCount == 1)
-        tuple.transformInto(tuple.argAt 0)
-      var result = expr.newCall()
-      result.push(expr.argAt 0)
-      result.push tuple
-      result
 
 var
   React = require 'react'
@@ -77,11 +54,11 @@ var Body = React.createClass {
       input {
         value: chatData.input
         onChange: (e)->
-          chatData.setInput <- e.target.value
-        onKeyUp: (e) -> do
+          chatData.setInput(e.target.value)
+        onKeyUp: (e) -> do!
           if (e.keyCode == 13)
             primus.write(chatData.input)
-            chatData.setInput <- ''
+            chatData.setInput ''
       }
       chatData.log.map
         (message) -> p message

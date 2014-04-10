@@ -29,24 +29,27 @@ var Connection = (spark) -> do
   this.spark = spark
   spark.on
     'data'
-    (data) -> do
+    (data) -> do!
       var c = connections[this.id]
-      console.log('Connection ' + this.id + ' with nick ' + c.nick + ' got ' + util.inspect(data))
-      if (c.nick != null)
-        primus.write(c.nick + ': ' + data)
-      else
-        c.nick = data
-        primus.write('User ' + data + ' joined the chat')
+      try
+        console.log('Connection ' + this.id + ' with nick ' + c.nick + ' got ' + util.inspect(data))
+        if (c.nick != null)
+          primus.write(c.nick + ': ' + data)
+        else
+          c.nick = data
+          primus.write('User ' + data + ' joined the chat')
+      catch (var e)
+         console.log (e)
 
 primus.on
   'connection'
-  (spark) -> do
+  (spark) -> do!
     console.log('Connection ' + spark.id)
     connections[spark.id] = new Connection spark
 
 primus.on
   'disconnection'
-  (spark) -> do
+  (spark) -> do!
     console.log('Disconnection ' + spark.id)
     delete connections[spark.id]
 

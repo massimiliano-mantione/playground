@@ -8,7 +8,7 @@
     "url": "https://github.com/massimiliano-mantione/mx.git"
   },
   "dependencies": {
-    "meta-script": ">=0.0.7",
+    "meta-script": ">=0.0.22",
     "source-map-support": "~0.2.5",
     "express": ">3.0.0",
     "jade": "*",
