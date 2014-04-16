@@ -8,12 +8,14 @@
     "url": "https://github.com/massimiliano-mantione/mx.git"
   },
   "dependencies": {
-    "meta-script": ">=0.0.22",
+    "meta-script": ">=0.0.24",
     "source-map-support": "~0.2.5",
+    "couchbase": "~1.2.1",
     "express": ">3.0.0",
     "jade": "*",
     "primus": ">2.0.0",
     "ws": "*",
+    "rx": "*",
     "react": ">=0.8.0"
   },
   "devDependencies": {

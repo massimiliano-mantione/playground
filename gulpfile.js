@@ -43,7 +43,7 @@ gulp.task('watch', function () {
   gulp.watch(paths.client, ['client']);
   gulp.watch(paths.server, ['server']);
   gulp.watch(paths.couch, ['couch']);
-  nodemon({script: 'server.js'});
+  //nodemon({script: 'server.js'});
 });
 
 gulp.task('default', ['client', 'server', 'couch']);
