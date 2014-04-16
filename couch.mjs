@@ -25,13 +25,14 @@ Rx-db.prototype.query = (view-name, query) ->
   rx(view.query.bind(view))()
 
 
-if false do!
+if true do!
   var db = new Rx-db couchbase-db
   db .->
     set('o1', {name: 'o1'})
-    flatMap #-> db.get-value 'o2'
-    flatMap #-> console.log #1
+    flatMap #-> db.get-value 'o1'
+    action! #-> console.log #1
     catchException #-> console.log ('Exception: ' + #1)
+    subscribe(#->)
 else do!
   var db = couchbase-db
   db.set
