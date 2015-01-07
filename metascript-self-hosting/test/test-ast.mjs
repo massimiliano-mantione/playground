@@ -1,4 +1,5 @@
 #external (describe, it)
+#metaimport '../lib/macros'
 
 var expect = (require "chai").expect
 
@@ -35,6 +36,18 @@ describe
         var ast2 = ast1.set ("sym", sym2)
         expect(ast1.get "sym").to.equal sym1
         expect(ast2.get "sym").to.equal sym2
+
+    it
+      "Can be used with immutable macros"
+      #->
+        var ast1 = new Ast sym1
+        var ast2 = (ast1..sym ..= sym2)
+        expect(ast1..sym).to.equal sym1
+        expect(ast2..sym).to.equal sym2
+        var ast = ast2
+        ast2..sym ..! sym1
+        expect(ast == ast2).to.equal false
+        expect(ast2..sym).to.equal sym1
 
     it
       "Handles arguments list"
