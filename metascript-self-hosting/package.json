@@ -1,0 +1,23 @@
+{
+  "name": "metascript-self-hosting",
+  "version": "0.0.1",
+  "description": "Self hosting metascript compiler",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "gulp": "^3.8.10",
+    "gulp-mjs-conventions": "0.0.4",
+    "meta-script": "0.0.45",
+    "webpack": "^1.4.15"
+  },
+  "dependencies": {
+    "immutable": "^3.4.1",
+    "transducers.js": "^0.2.3",
+    "underscore-transducer": "^0.3.2"
+  }
+}
