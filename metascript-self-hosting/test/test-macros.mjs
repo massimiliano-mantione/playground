@@ -30,33 +30,33 @@ describe
     it
       'Can set a map property'
       #->
-        var m = (m1..a ..= 42)
+        var m = (m1..a ..! 42)
         expect(m..a).to.equal 42
         expect(m1..a).to.equal 1
-        m1..a ..! 42
+        m1..a ..= 42
         expect(m1..a).to.equal 42
 
     it
       'Can set into a map property'
       #->
-        var m = (m2..a..b ..= 0)
+        var m = (m2..a..b ..! 0)
         expect(m..a..b).to.equal 0
         expect(m2..a..b).to.equal 42
-        m2..a..b ..! 0
+        m2..a..b ..= 0
         expect(m2..a..b).to.equal 0
 
     it
       'Can update a map property'
       #->
-        var m = (m1..a ..= #it + 41)
+        var m = (m1..a ..! #it + 41)
         expect(m..a).to.equal 42
-        m1..a ..! #it + 41
+        m1..a ..= #it + 41
         expect(m1..a).to.equal 42
 
     it
       'Can update into a map property'
       #->
-        var m = (m2..a..b ..= #it / 2)
+        var m = (m2..a..b ..! #it / 2)
         expect(m..a..b).to.equal 21
-        m2..a..b ..! #it / 2
+        m2..a..b ..= #it / 2
         expect(m2..a..b).to.equal 21

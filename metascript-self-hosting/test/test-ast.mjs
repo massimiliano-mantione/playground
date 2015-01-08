@@ -41,11 +41,11 @@ describe
       "Can be used with immutable macros"
       #->
         var ast1 = new Ast sym1
-        var ast2 = (ast1..sym ..= sym2)
+        var ast2 = (ast1..sym ..! sym2)
         expect(ast1..sym).to.equal sym1
         expect(ast2..sym).to.equal sym2
         var ast = ast2
-        ast2..sym ..! sym1
+        ast2..sym ..= sym1
         expect(ast == ast2).to.equal false
         expect(ast2..sym).to.equal sym1
 

@@ -15,7 +15,7 @@
       else
         ` (~` (data.value)).get-in([(~` (data.members))])
 
-  #keepmacro ..=
+  #keepmacro ..!
     arity: binary
     precedence: ASSIGNMENT
     pre-expand: (value, mutator) ->
@@ -37,7 +37,7 @@
         ` (~` (data.value)).update-in([(~` (data.members))], #-> ~`mutator)
 
 
-  #keepmacro ..!
+  #keepmacro ..=
     arity: binary
     precedence: ASSIGNMENT
     pre-expand: (value, mutator) ->
@@ -47,7 +47,7 @@
         members: []
       }
       process-member-expression (value, data)
-      ` ((~` (data.value)) = ((~` value) ..= (~` mutator)))
+      ` ((~` (data.value)) = ((~` value) ..! (~` mutator)))
 
 
 #keep-meta
