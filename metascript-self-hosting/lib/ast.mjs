@@ -128,5 +128,6 @@ Ast.prototype.transformation = (ctx, pre-step, post-step) ->
 Ast.prototype.transform-args = (ctx, transformation) ->
   this
 
+Ast.ast? = #-> #it.constructor == Ast
 
 module.exports = Ast

@@ -13,6 +13,17 @@ var arg0 = new Ast sym-arg
 var arg1 = new Ast sym-arg
 
 describe
+  "Ast"
+  #->
+    it
+      "Can detect an ast node"
+      #->
+        var ast = new Ast()
+        var o = {}
+        expect(Ast.ast? ast).to.equal true
+        expect(Ast.ast? o).to.equal false
+
+describe
   "Ast node"
   #->
     it
@@ -61,7 +72,7 @@ describe
         expect(ast.at 0).to.equal arg0
         expect(ast.at 1).to.equal arg1
         expect(ast.at1().sym).to.equal sym-arg
-;
+
     it
       "Can be made mutable"
       #->
