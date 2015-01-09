@@ -61,17 +61,30 @@ describe
         expect(ast2..sym).to.equal sym1
 
     it
-      "Handles arguments list"
+      "Handles arguments list through the 'at' method"
       #->
         var start = new Ast sym1
         var ast = start.at0 arg0
-        expect(start.args.size).to.equal 0
-        expect(ast.args.size).to.equal 1
+        expect(start.size).to.equal 0
+        expect(ast.size).to.equal 1
         ast = ast.at1 arg1
-        expect(ast.args.size).to.equal 2
+        expect(ast.size).to.equal 2
         expect(ast.at 0).to.equal arg0
         expect(ast.at 1).to.equal arg1
         expect(ast.at1().sym).to.equal sym-arg
+
+    it
+      "Handles arguments list through the 'get' and 'set' methods"
+      #->
+        var start = new Ast sym1
+        var ast = start.set (0, arg0)
+        expect(start.size).to.equal 0
+        expect(ast.size).to.equal 1
+        ast = ast.set (1, arg1)
+        expect(ast.size).to.equal 2
+        expect(ast.get 0).to.equal arg0
+        expect(ast.get 1).to.equal arg1
+        expect(ast.get(1).sym).to.equal sym-arg
 
     it
       "Can be made mutable"
@@ -85,9 +98,77 @@ describe
         mutated = mutated.at0 arg0
         mutated = mutated.at1 arg1
         expect(mutated == mutable).to.equal true
-        expect(mutated.args.size).to.equal 2
+        expect(mutated.size).to.equal 2
         expect(mutated.at 0).to.equal arg0
         expect(mutated.at 1).to.equal arg1
         var last = mutated.as-immutable()
         expect(last == mutable).to.equal true
         expect(mutable.mutable?).to.equal false
+
+    it
+      "Looks like a List of args"
+      #->
+        var ast = new Ast sym1
+        var a1 = new Ast sym-arg
+        var a2 = new Ast sym-arg
+        var a3 = new Ast sym-arg
+        var keep = ast
+        ast = ast.set (0, a1)
+        expect(Ast.ast? ast).to.equal true
+        expect(ast.size).to.equal 1
+        ast = ast.set (1, a2)
+        expect(Ast.ast? ast).to.equal true
+        expect(ast.size).to.equal 2
+        ast = ast.delete 0
+        expect(ast.size).to.equal 1
+        expect(ast.get 0).to.equal a2
+        ast = ast.clear()
+        expect(ast.size).to.equal 0
+        ast = ast.push(a1, a2)
+        expect(ast.size).to.equal 2
+        ast = ast.push(a3)
+        expect(ast.get 2).to.equal a3
+        ast = ast.pop()
+        expect(ast.size).to.equal 2
+        expect(ast.first()).to.equal a1
+        expect(ast.last()).to.equal a2
+        ast = ast.unshift(a2, a1)
+        expect(ast.size).to.equal 4
+        expect(ast.first()).to.equal a2
+        expect(ast.last()).to.equal a2
+        ast = ast.clear()
+        ast = ast.push(a1)
+        ast = ast.update(0, #-> a2)
+        expect(ast.get 0).to.equal a2
+        ; I cannot make "not-set-value" work as expected
+        ;ast = ast.update(1, a1, #-> #it)
+        ;expect(ast.get 1).to.equal a1
+        ;ast = ast.update(2, a3, #-> #it)
+        ;expect(ast.get 2).to.equal a3
+        ast = ast.set-size 0
+        ast = ast.push(a1, a2)
+        expect(ast.size).to.equal 2
+        ast = ast.set-size 3
+        expect(ast.size).to.equal 3
+        expect(ast.get 2).to.equal undefined
+        ast = ast.set-size 2
+        expect(ast.has 1).to.equal true
+        expect(ast.has 2).to.equal false
+        expect(ast.contains a1).to.equal true
+        expect(ast.contains a2).to.equal true
+        expect(ast.contains a3).to.equal false
+        ast = ast.set-in ([0], ast)
+        ast = ast.set-in ([1], ast.get 0)
+        expect(ast..[0]..[0]).to.equal a1
+        expect(ast..[0]..[1]).to.equal a2
+        expect(ast..[1]..[0]).to.equal a1
+        expect(ast..[1]..[1]).to.equal a2
+        ast..[0]..[0] ..= a3
+        ast..[1]..[1] ..= a3
+        expect(ast..[0]..[0]).to.equal a3
+        expect(ast..[1]..[1]).to.equal a3
+        keep = ast
+        ast = ast.flatten (true)
+        expect(ast.size).to.equal 4
+        ;ast..[0] ..= a1
+        ;ast..[2] ..= a3

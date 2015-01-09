@@ -1,4 +1,4 @@
-#external module
+#external (module, arguments, Symbol)
 
 var Immutable = require 'immutable'
 
@@ -107,9 +107,16 @@ Ast.prototype.at = (idx, value) ->
     this.set-args (this.args.set (idx, value))
   else
     this.args.get idx
-
-Ast.prototype.get = #-> this[#it]
-Ast.prototype.set = Ast.prototype.set-property
+Ast.prototype.get = #->
+  if (typeof #it == "number")
+    this.args.get #it
+  else
+    this[#it]
+Ast.prototype.set = (key, value) ->
+  if (typeof key == "number")
+    this.set-args (this.args.set (key, value))
+  else
+    this.set-property (key, value)
 
 Ast.prototype.at0 = #-> this.at (0, #it)
 Ast.prototype.at1 = #-> this.at (1, #it)
@@ -123,10 +130,222 @@ Ast.prototype.at8 = #-> this.at (8, #it)
 Ast.prototype.at9 = #-> this.at (9, #it)
 
 Ast.prototype.transformation = (ctx, pre-step, post-step) ->
-  this.args
-
-Ast.prototype.transform-args = (ctx, transformation) ->
   this
+
+Ast.prototype.transform-args = (ctx, pre-step, post-step) ->
+  this
+
+
+; Macros to wrap args List methods
+#defmacro #wrap-ast-args-method-all
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> `
+    Ast.prototype.(~` tag) = #-> this.set-args
+      this.args.(~` tag).apply(this.args, arguments)
+#defmacro #wrap-ast-args-method0a
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.args.(~` tag)())
+#defmacro #wrap-ast-args-method0r
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> do (this.args.(~` tag)(), this))
+#defmacro #wrap-ast-args-method0m
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)()))
+#defmacro #wrap-ast-args-method1a
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.args.(~` tag)(#1))
+#defmacro #wrap-ast-args-method1r
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> do (this.args.(~` tag)(#1), this))
+#defmacro #wrap-ast-args-method1m
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)(#1)))
+#defmacro #wrap-ast-args-method2a
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.args.(~` tag)(#1, #2))
+#defmacro #wrap-ast-args-method2r
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> do (this.args.(~` tag)(#1, #2), this))
+#defmacro #wrap-ast-args-method2m
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)(#1, #2)))
+#defmacro #wrap-ast-args-method3r
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> do (this.args.(~` tag)(#1, #2, #3), this))
+#defmacro #wrap-ast-args-method3m
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)(#1, #2, #3)))
+#defmacro #wrap-ast-args-method4r
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> do (this.args.(~` tag)(#1, #2, #3, #4), this))
+#defmacro #wrap-ast-args-method4m
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)(#1, #2, #3, #4)))
+
+; Wrappers around the args List, so that Ast looks like a List
+var FAUX_ITERATOR_SYMBOL = '@@iterator'
+var REAL_ITERATOR_SYMBOL = (typeof Symbol == 'function' && Symbol.iterator)
+var ITERATOR_SYMBOL = REAL_ITERATOR_SYMBOL || FAUX_ITERATOR_SYMBOL;
+var IS_ITERABLE_SENTINEL = '@@__IMMUTABLE_ITERABLE__@@'
+;var IS_KEYED_SENTINEL = '@@__IMMUTABLE_KEYED__@@'
+;var IS_INDEXED_SENTINEL = '@@__IMMUTABLE_INDEXED__@@'
+;var IS_ORDERED_SENTINEL = '@@__IMMUTABLE_ORDERED__@@'
+Ast.prototype[IS_ITERABLE_SENTINEL] = true
+Ast.prototype[ITERATOR_SYMBOL] = #-> this.args[ITERATOR_SYMBOL]
+Object.defineProperty
+  Ast.prototype
+  ITERATOR_SYMBOL
+  {
+    get: #-> do
+      var ast = this
+      #-> ast.args[ITERATOR_SYMBOL]
+    set: #-> throw new Error 'Ast.prototype.ITERATOR_SYMBOL is not writable'
+    enumerable: false
+    configurable: false
+  }
+Object.defineProperty
+  Ast.prototype
+  "__iterator"
+  {
+    get: #-> do
+      var ast = this
+      #-> ast.args["__iterator"](#1, #2)
+    set: #-> throw new Error 'Ast.prototype.__iterator is not writable'
+    enumerable: false
+    configurable: false
+  }
+Object.defineProperty
+  Ast.prototype
+  "__iterate"
+  {
+    get: #-> do
+      var ast = this
+      #-> ast.args["__iterate"](#1, #2)
+    set: #-> throw new Error 'Ast.prototype.__iterate is not writable'
+    enumerable: false
+    configurable: false
+  }
+Object.defineProperty
+  Ast.prototype
+  "size"
+  {
+    get: #-> this.args.size
+    set: #-> throw new Error 'Ast.prototype.size is not writable'
+    enumerable: true
+    configurable: false
+  }
+#wrap-ast-args-method1m 'delete'
+#wrap-ast-args-method0m clear
+#wrap-ast-args-method-all push
+#wrap-ast-args-method0m pop
+#wrap-ast-args-method-all unshift
+#wrap-ast-args-method0m shift
+#wrap-ast-args-method0a first
+#wrap-ast-args-method0a last
+#wrap-ast-args-method3m update
+#wrap-ast-args-method-all merge
+#wrap-ast-args-method-all mergeWith
+#wrap-ast-args-method-all mergeDeep
+#wrap-ast-args-method-all mergeDeepWith
+#wrap-ast-args-method1m setSize
+#wrap-ast-args-method0a toSeq
+#wrap-ast-args-method0a toKeyedSeq
+#wrap-ast-args-method0a toIndexedSeq
+#wrap-ast-args-method0a toSetSeq
+#wrap-ast-args-method0a fromEntrySeq
+#wrap-ast-args-method1a has
+#wrap-ast-args-method1a contains
+#wrap-ast-args-method2a getIn
+#wrap-ast-args-method2a hasIn
+#wrap-ast-args-method2m setIn
+#wrap-ast-args-method3m updateIn
+#wrap-ast-args-method0a toMap
+#wrap-ast-args-method0a toOrderedMap
+#wrap-ast-args-method0a toSet
+#wrap-ast-args-method0a toOrderedSet
+#wrap-ast-args-method0a toList
+#wrap-ast-args-method0a toStack
+#wrap-ast-args-method0a keys
+#wrap-ast-args-method0a values
+#wrap-ast-args-method0a entries
+#wrap-ast-args-method0a keySeq
+#wrap-ast-args-method0a valueSeq
+#wrap-ast-args-method0a entrySeq
+#wrap-ast-args-method2m map
+#wrap-ast-args-method2m filter
+#wrap-ast-args-method2m filterNot
+#wrap-ast-args-method0m reverse
+#wrap-ast-args-method1m sort
+#wrap-ast-args-method2m sortBy
+#wrap-ast-args-method2a forEach
+#wrap-ast-args-method2m slice
+#wrap-ast-args-method0m rest
+#wrap-ast-args-method0m butLast
+#wrap-ast-args-method1m skip
+#wrap-ast-args-method1m skipLast
+#wrap-ast-args-method2m skipWhile
+#wrap-ast-args-method2m skipUntil
+#wrap-ast-args-method1m take
+#wrap-ast-args-method1m takeLast
+#wrap-ast-args-method2m takeWhile
+#wrap-ast-args-method2m takeUntil
+#wrap-ast-args-method-all concat
+#wrap-ast-args-method1m flatten
+#wrap-ast-args-method2m flatMap
+
 
 Ast.ast? = #-> #it.constructor == Ast
 
