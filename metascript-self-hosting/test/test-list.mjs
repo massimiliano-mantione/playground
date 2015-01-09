@@ -5,7 +5,7 @@ var expect = (require "chai").expect
 var Immutable = require 'immutable'
 
 describe
-  'Macros for Immutable'
+  'List'
   #-> do!
     var (l, l1, l2)
 

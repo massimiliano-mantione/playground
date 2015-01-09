@@ -4,6 +4,10 @@
 var expect = (require "chai").expect
 var Immutable = require 'immutable'
 
+var Ast = require '../lib/ast'
+var Symbol = require '../lib/symbol'
+var Context = require '../lib/context'
+
 describe
   'Macros for Immutable'
   #-> do!
@@ -60,3 +64,88 @@ describe
         expect(m..a..b).to.equal 21
         m2..a..b ..= #it / 2
         expect(m2..a..b).to.equal 21
+
+describe
+  'Context [un]wrapping macros'
+  #-> do!
+    var (ctx, original-ctx, other-ctx, ast, result)
+
+    before-each #->
+      original-ctx = Context.create()
+      ctx = Context.create()
+      other-ctx = Context.create()
+      ast = new Ast()
+
+    it
+      'Unwraps an ast'
+      #->
+        result = #unwrap ast
+        expect(result == ast).to.equal true
+
+    it
+      'Unwraps a ctx'
+      #->
+        result = #unwrap other-ctx
+        expect(result == null).to.equal true
+        expect(ctx == other-ctx).to.equal true
+
+    it
+      'Unwraps a wrapper'
+      #->
+        var w = (other-ctx.wrap ast)
+        expect(w.ctx == other-ctx).to.equal true
+        expect(w.ast == ast).to.equal true
+        result = #unwrap (w)
+        expect(result == ast).to.equal true
+        expect(ctx == other-ctx).to.equal true
+
+    it
+      'Wraps an ast with unchanged context as itself'
+      #->
+        ctx = original-ctx
+        result = #wrap ast
+        expect(result == ast).to.equal true
+        expect(ctx == original-ctx).to.equal true
+
+    it
+      'Wraps an ast with changed context'
+      #->
+        result = #wrap ast
+        expect(Context.wrapper? result).to.equal true
+        expect(result.ast == ast).to.equal true
+        expect(result.ctx == ctx).to.equal true
+
+    it
+      'Wraps a null ast with unchanged context as null'
+      #->
+        ctx = original-ctx
+        result = #wrap null
+        expect(result == null).to.equal true
+        expect(ctx == original-ctx).to.equal true
+
+    it
+      'Wraps a null ast with changed context'
+      #->
+        ctx = other-ctx
+        result = #wrap null
+        expect(Context.wrapper? result).to.equal true
+        expect(result.ast == null).to.equal true
+        expect(result.ctx == ctx).to.equal true
+
+    it
+      'Wraps an [ast] with unchanged context as itself'
+      #->
+        ctx = original-ctx
+        result = #wrap [ast]
+        expect(result.constructor == Array).to.equal true
+        expect(result[0] == ast).to.equal true
+        expect(ctx == original-ctx).to.equal true
+
+    it
+      'Wraps an [ast] with changed context'
+      #->
+        result = #wrap [ast]
+        expect(Context.wrapper? result).to.equal true
+        expect(result.ast.constructor == Array).to.equal true
+        expect(result.ast[0] == ast).to.equal true
+        expect(result.ctx == ctx).to.equal true

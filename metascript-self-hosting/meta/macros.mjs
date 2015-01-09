@@ -49,6 +49,42 @@
       process-member-expression (value, data)
       ` ((~` (data.value)) = ((~` value) ..! (~` mutator)))
 
+; Theese macros expect two variables in scope, with exactly these names:
+; - original-ctx (the ctx that was originally passed to the function)
+; - ctx (the current ctx)
+; Their argument is an expression that evaluates to one of the following:
+; - an Ast (possibly null)
+; - an [Ast] (plain array, if empty has the same meaning as null)
+; - a Context
+; - a Context.Wrapper
+  #keepmacro #unwrap
+    arity: unary
+    precedence: LOW
+    expand: result -> do
+      var code = ` do
+        var \r = ~` result
+        if (Context.ctx? \r) do
+          ctx = \r
+          \r = null
+        else if (Context.wrapper? \r) do
+          ctx = \r.ctx
+          \r = \r.ast
+        \r
+      code.resolve-virtual()
+      code
+  #keepmacro #wrap
+    arity: unary
+    precedence: LOW
+    expand: result -> do
+      var code = ` do
+        var \r = #unwrap ~` result
+        if (ctx == original-ctx)
+          \r
+        else
+          ctx.wrap \r
+      code.resolve-virtual()
+      code
+
 
 #keep-meta
   var process-member = (member, members) -> do!
