@@ -68,6 +68,10 @@ Ast.prototype.as-immutable = #-> do
   this.mutable? = false
   this
 
+Ast.prototype.with-mutations = #-> do
+  var mutated = this.as-mutable()
+  #it mutated
+  mutated.as-immutable()
 
 Ast.prototype.set-property = (name, value) ->
   var result =

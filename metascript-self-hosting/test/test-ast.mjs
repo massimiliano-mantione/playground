@@ -106,6 +106,22 @@ describe
         expect(mutable.mutable?).to.equal false
 
     it
+      "Supports the batch mutation API"
+      #->
+        var start = new Ast sym1
+        var a1 = new Ast sym-arg
+        var a2 = new Ast sym-arg
+        var a3 = new Ast sym-arg
+        var mutated = start.with-mutations #->
+          #it.push a1
+          #it.push a2
+          #it.set-sym sym2
+          #it.push a3
+        expect(mutated.mutable?).to.equal false
+        expect(mutated.sym).to.equal sym2
+        expect(mutated.size).to.equal 3
+
+    it
       "Looks like a List of args"
       #->
         var ast = new Ast sym1
