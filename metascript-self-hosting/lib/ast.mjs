@@ -206,6 +206,13 @@ Ast.prototype.transform-args = (ctx, pre-step, post-step) ->
     if (tag.value?())
       tag = tag.new-tag tag.get-simple-value()
     `(Ast.prototype.(~` tag) = #-> this.set-args (this.args.(~` tag)(#1, #2)))
+#defmacro #wrap-ast-args-method3a
+  arity: unary
+  precedence: LOW
+  expand: (tag) -> do
+    if (tag.value?())
+      tag = tag.new-tag tag.get-simple-value()
+    `(Ast.prototype.(~` tag) = #-> this.args.(~` tag)(#1, #2, #3))
 #defmacro #wrap-ast-args-method3r
   arity: unary
   precedence: LOW
@@ -345,6 +352,34 @@ Object.defineProperty
 #wrap-ast-args-method-all concat
 #wrap-ast-args-method1m flatten
 #wrap-ast-args-method2m flatMap
+#wrap-ast-args-method1m interpose
+#wrap-ast-args-method-all interleave
+#wrap-ast-args-method-all splice
+#wrap-ast-args-method-all zip
+#wrap-ast-args-method-all zipWith
+#wrap-ast-args-method3a reduce
+#wrap-ast-args-method3a reduceRight
+#wrap-ast-args-method2a every
+#wrap-ast-args-method2a some
+; It seems that List does not have an "isEmpty" method
+;#wrap-ast-args-method0a isEmpty
+#wrap-ast-args-method0a count
+#wrap-ast-args-method2a countBy
+#wrap-ast-args-method3a find
+#wrap-ast-args-method3a findLast
+#wrap-ast-args-method1a max
+#wrap-ast-args-method2a maxBy
+#wrap-ast-args-method1a min
+#wrap-ast-args-method2a minBy
+#wrap-ast-args-method1a indexOf
+#wrap-ast-args-method1a lastIndexOf
+#wrap-ast-args-method2a findIndex
+#wrap-ast-args-method2a findLastIndex
+; It seems that List does not have an "isSubset" method
+;#wrap-ast-args-method1a isSubset
+; It seems that List does not have an "isSuperset" method
+;#wrap-ast-args-method1a isSuperset
+
 
 
 Ast.ast? = #-> #it.constructor == Ast

@@ -170,5 +170,37 @@ describe
         keep = ast
         ast = ast.flatten (true)
         expect(ast.size).to.equal 4
-        ;ast..[0] ..= a1
-        ;ast..[2] ..= a3
+        expect(ast..[0]).to.equal a3
+        expect(ast..[3]).to.equal a3
+        ast = ast.filter #-> #it != a3
+        expect(ast.size).to.equal 2
+        expect(ast..[0]).to.equal a2
+        expect(ast..[1]).to.equal a1
+        ast = keep
+        ast = ast.flat-map (#-> #it.map (#-> a1))
+        expect(ast.size).to.equal 4
+        expect(ast..[0]).to.equal a1
+        expect(ast..[1]).to.equal a1
+        expect(ast..[2]).to.equal a1
+        expect(ast..[3]).to.equal a1
+        expect(ast.reduce (#-> #1 && (#2 == a1), true)).to.equal true
+        expect(ast.every #-> #it == a1).to.equal true
+        expect(ast.count()).to.equal 4
+        expect((ast.count-by #-> #it.sym.id).size).to.equal 1
+        expect((ast.count-by #-> #it.sym.id)..["sym-arg"]).to.equal 4
+        ast = ast.clear()
+        ast = ast.push(a1, a2)
+        expect(ast.find #-> true).to.equal a1
+        expect(ast.find-last #-> true).to.equal a2
+        ast = ast.push ast
+        expect(ast.max #-> #it.size).to.equal ast..[2]
+        expect(ast.min #-> #it.size).to.equal a1
+        expect(ast.index-of a2).to.equal 1
+        expect(ast.last-index-of a2).to.equal 1
+        expect(ast.find-index #-> #it == a2).to.equal 1
+        expect(ast.find-last-index #-> #it == a2).to.equal 1
+        ;ast = ast.pop()
+        ;expect(ast.subset? ([a1, a2, a3])).to.equal true
+        ;expect(ast.subset? ([a1])).to.equal false
+        ;expect(ast.superSet? ([a1, a2, a3])).to.equal false
+        ;expect(ast.superset? ([a1])).to.equal true
