@@ -87,6 +87,17 @@ describe
         expect(ast.get(1).sym).to.equal sym-arg
 
     it
+      "Can detect expansion location information"
+      #->
+        var a = new Ast sym1
+        var b
+        expect(a.has-expansion-location()).to.equal false
+        b = (a..src-file ..! "other-file")
+        expect(b.has-expansion-location()).to.equal true
+        b = (a..src-line-from ..! 42)
+        expect(b.has-expansion-location()).to.equal true
+
+    it
       "Can be made mutable"
       #->
         var start = new Ast sym1

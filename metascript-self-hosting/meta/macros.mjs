@@ -87,10 +87,39 @@
 
 
 #keep-meta
+  var first-to-upper = (s, prepend-underscore) -> do
+    var lowercase = "abcdefghijklmnopqrstuvwxtz"
+    if (s.length > 0) do
+      var first = s.substring(0, 1)
+      if ((lowercase.index-of first) >= 0)
+        return first.to-upper-case() + s.substring(1)
+    if (prepend-underscore)
+      '_' + s
+    else
+      s
+
+  var normalize-tag = tag ->
+    var i
+    while (tag[tag.length - 1] == '!' || tag[tag.length - 1] == '?')
+      var prefix = if (tag[tag.length - 1] == '!') 'do' else 'is'
+      var body = tag.substring(0, tag.length - 1)
+      body = first-to-upper(body, false)
+      tag = prefix + body;
+    while ((i = tag.index-of('->')) >= 0)
+      var before = tag.substring(0, i)
+      var after = tag.substring(i + 2)
+      var middle = if (before.length > 0) 'To' else 'to'
+      tag = before + middle + first-to-upper(after, true)
+    while ((i = tag.index-of('-')) >= 0)
+      var before = tag.substring(0, i)
+      var after = tag.substring(i + 1)
+      tag = before + first-to-upper(after, true)
+    tag
+
   var process-member = (member, members) -> do!
     members.unshift
       if (member.tag?())
-        member.new-value member.get-simple-value()
+        member.new-value (normalize-tag member.get-simple-value())
       else if (member.array?)
         if (member.count == 1)
           member.at 0
