@@ -36,6 +36,33 @@
       else
         ` (~` (data.value)).update-in([(~` (data.members))], #-> ~`mutator)
 
+  #keepmacro <..
+    arity: binary
+    precedence: ASSIGNMENT
+    pre-expand: (value, mutator) ->
+      #external (process-member-expression)
+      var data = {
+        value: null
+        members: []
+      }
+      var inspect = (require 'util').inspect
+      process-member-expression (value, data)
+      if (data.members.length == 0) do
+        data.value.error "Expression requires members"
+        data.value
+      else do
+        var m = data.members.pop()
+        if (data.members.length == 0)
+          ` ((~` (data.value)) [ (~`m) ]) (~`mutator)
+        else if (data.members.length == 1)
+          ` (~` (data.value)).set
+            ~` (data.members[0])
+            ((~`(data.value)).get(~`(data.members[0])) [ (~`m) ]) (~`mutator)
+        else
+          ` (~` (data.value)).set-in
+            [~` (data.members)]
+            ((~`(data.value)).get-in([~`(data.members)]) [ (~`m) ]) (~`mutator)
+
 
   #keepmacro ..=
     arity: binary

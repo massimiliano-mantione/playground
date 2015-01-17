@@ -8,6 +8,14 @@ var Ast = require '../lib/ast'
 var Symbol = require '../lib/symbol'
 var Context = require '../lib/context'
 
+var R = Immutable.Record {
+  p1: "p1"
+  p2: "p2"
+  deep: null
+}
+R.prototype.mp1 = v -> this.set ("p1", v)
+R.prototype.mp2 = v -> this.set ("p2", v)
+
 describe
   'Macros for Immutable'
   #-> do!
@@ -64,6 +72,21 @@ describe
         expect(m..a..b).to.equal 21
         m2..a..b ..= #it / 2
         expect(m2..a..b).to.equal 21
+
+    it
+      'Can invoke a mutating method'
+      #->
+        var r = R()
+        r..deep ..= R()
+        r..deep..deep ..= R()
+        var res
+        res = (r..mp1 <.. "v1")
+        expect(res..p1).to.equal "v1"
+        res = (r..deep..mp2 <.. "v2")
+        expect(res..deep..p2).to.equal "v2"
+        res = (r..deep..deep..mp1 <.. "v")
+        expect(res..deep..deep..p1).to.equal "v"
+
 
 describe
   'Context [un]wrapping macros'
