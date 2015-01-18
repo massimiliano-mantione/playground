@@ -19,22 +19,37 @@
     arity: binary
     precedence: ASSIGNMENT
     pre-expand: (value, mutator) ->
-      #external (process-member-expression, expression-contains-it)
+      #external (process-member-expression)
       var data = {
         value: null
         members: []
       }
       process-member-expression (value, data)
-      if (data.members.length == 0)
-        ; Cursor case
-        ` (~` (data.value)).update(#-> ~`mutator)
+      if (data.members.length == 0) do
+        data.value.error "Expression requires members"
+        data.value
       else if (data.members.length == 1)
-        if (expression-contains-it mutator)
-          ` (~` (data.value)).update(~` (data.members[0]), #-> ~`mutator)
-        else
-          ` (~` (data.value)).set(~` (data.members[0]), ~`mutator)
+        ` (~` (data.value)).set(~` (data.members[0]), ~`mutator)
       else
-        ` (~` (data.value)).update-in([(~` (data.members))], #-> ~`mutator)
+        ` (~` (data.value)).set-in([(~` (data.members))], ~`mutator)
+
+  #keepmacro ..!>
+    arity: binary
+    precedence: ASSIGNMENT
+    pre-expand: (value, mutator) ->
+      #external (process-member-expression)
+      var data = {
+        value: null
+        members: []
+      }
+      process-member-expression (value, data)
+      if (data.members.length == 0) do
+        data.value.error "Expression requires members"
+        data.value
+      else if (data.members.length == 1)
+        ` (~` (data.value)).update(~` (data.members[0]), ~`mutator)
+      else
+        ` (~` (data.value)).update-in([(~` (data.members))], ~`mutator)
 
   #keepmacro <..
     arity: binary
@@ -75,6 +90,18 @@
       }
       process-member-expression (value, data)
       ` ((~` (data.value)) = ((~` value) ..! (~` mutator)))
+
+  #keepmacro ..=>
+    arity: binary
+    precedence: ASSIGNMENT
+    pre-expand: (value, mutator) ->
+      #external (process-member-expression)
+      var data = {
+        value: null
+        members: []
+      }
+      process-member-expression (value, data)
+      ` ((~` (data.value)) = ((~` value) ..!> (~` mutator)))
 
 ; Theese macros expect two variables in scope, with exactly these names:
 ; - original-ctx (the ctx that was originally passed to the function)
@@ -164,14 +191,3 @@
       process-member-expression (v, data)
     else
       data.value = member-expression
-
-  var expression-contains-it = #->
-    if (#it.placeholder?() && #it.get-simple-value() == '#it')
-      true
-    else do
-      var i = 0
-      while (i < #it.count)
-        if (expression-contains-it (#it.at i))
-          return true
-        i++
-      false

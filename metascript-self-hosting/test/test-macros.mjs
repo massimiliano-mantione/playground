@@ -60,17 +60,17 @@ describe
     it
       'Can update a map property'
       #->
-        var m = (m1..a ..! #it + 41)
+        var m = (m1..a ..!> #-> #it + 41)
         expect(m..a).to.equal 42
-        m1..a ..= #it + 41
+        m1..a ..=> #-> #it + 41
         expect(m1..a).to.equal 42
 
     it
       'Can update into a map property'
       #->
-        var m = (m2..a..b ..! #it / 2)
+        var m = (m2..a..b ..!> #-> #it / 2)
         expect(m..a..b).to.equal 21
-        m2..a..b ..= #it / 2
+        m2..a..b ..=> #-> #it / 2
         expect(m2..a..b).to.equal 21
 
     it
