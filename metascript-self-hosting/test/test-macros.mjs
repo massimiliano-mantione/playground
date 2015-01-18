@@ -80,12 +80,17 @@ describe
         r..deep ..= R()
         r..deep..deep ..= R()
         var res
-        res = (r..mp1 <.. "v1")
-        expect(res..p1).to.equal "v1"
-        res = (r..deep..mp2 <.. "v2")
+        res = (r..deep.mp2 <.. "v2")
         expect(res..deep..p2).to.equal "v2"
-        res = (r..deep..deep..mp1 <.. "v")
+        res = (r..deep..deep.mp1 <.. "v")
         expect(res..deep..deep..p1).to.equal "v"
+        res = r
+        r..deep.mp2 <=.. "v2"
+        expect(r..deep..p2).to.equal "v2"
+        r = res
+        r..deep..deep.mp1 <=.. "v"
+        expect(r..deep..deep..p1).to.equal "v"
+
 
 
 describe
