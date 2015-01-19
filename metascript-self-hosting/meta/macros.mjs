@@ -25,9 +25,8 @@
         members: []
       }
       process-member-expression (value, data)
-      if (data.members.length == 0) do
-        data.value.error "Expression requires members"
-        data.value
+      if (data.members.length == 0)
+        mutator
       else if (data.members.length == 1)
         ` (~` (data.value)).set(~` (data.members[0]), ~`mutator)
       else

@@ -17,7 +17,23 @@ var Ast = (
     org-column-from
     org-column-to
     mutable?
-    ) ->
+  ) -> do!
+    if (! this instanceof Ast)
+      return new Ast
+        sym
+        val
+        args
+        src-file
+        src-line-from
+        src-line-to
+        src-column-from
+        src-column-to
+        org-file
+        org-line-from
+        org-line-to
+        org-column-from
+        org-column-to
+        mutable?
     this.sym = sym
     this.val = sym
     this.args = do
