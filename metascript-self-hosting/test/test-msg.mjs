@@ -39,7 +39,7 @@ describe
       "Can be created from an ast node"
       #->
         var ast = node-at ("src", 42, 12)
-        expect(ast.has-expansion-location()).to.equal false
+        expect(ast.has-expansion-location).to.equal false
         var m = Msg.from-ast (ast, "msg")
         expect(m.message).to.equal "msg"
         expect(m.source).to.equal "src"
@@ -49,7 +49,7 @@ describe
       "Can be created from an expanded ast node"
       #->
         var ast = node-at ("src", 42, 12, "org", 420, 120)
-        expect(ast.has-expansion-location()).to.equal true
+        expect(ast.has-expansion-location).to.equal true
         var m = Msg.from-ast (ast, "msg")
         expect(m.message).to.equal "msg"
         expect(m.source).to.equal "src"

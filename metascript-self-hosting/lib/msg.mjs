@@ -51,7 +51,7 @@ Msg.from-ast = (ast, message) -> do
     line-to: ast.src-line-to
     column-to: ast.src-column-to
   }
-  if (ast.has-expansion-location()) do
+  if (ast.has-expansion-location) do
     var expansion = Msg {
       message: "Expanded from here"
       source: ast.org-file

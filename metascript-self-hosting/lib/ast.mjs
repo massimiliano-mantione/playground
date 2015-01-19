@@ -53,13 +53,20 @@ Ast.prototype.clone = #-> new Ast
   this.org-column-to
   this.mutable?
 
-Ast.prototype.has-expansion-location = #->
-  ( this.src-file != this.org-file ||
-    this.src-line-from != this.org-line-from ||
-    this.src-line-to != this.org-line-to ||
-    this.src-column-from != this.org-column-from ||
-    this.src-column-to != this.org-column-to)
-
+Object.defineProperty
+  Ast.prototype
+  "hasExpansionLocation"
+  {
+    get: #->
+      ( this.src-file != this.org-file ||
+        this.src-line-from != this.org-line-from ||
+        this.src-line-to != this.org-line-to ||
+        this.src-column-from != this.org-column-from ||
+        this.src-column-to != this.org-column-to)
+    set: #-> throw new Error 'Ast.prototype.hasExpansionLocation is not writable'
+    enumerable: true
+    configurable: false
+  }
 
 Ast.prototype.as-mutable = #->
   if (this.mutable?)

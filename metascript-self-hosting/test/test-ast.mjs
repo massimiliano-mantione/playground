@@ -91,11 +91,11 @@ describe
       #->
         var a = new Ast sym1
         var b
-        expect(a.has-expansion-location()).to.equal false
+        expect(a.has-expansion-location).to.equal false
         b = (a..src-file ..! "other-file")
-        expect(b.has-expansion-location()).to.equal true
+        expect(b.has-expansion-location).to.equal true
         b = (a..src-line-from ..! 42)
-        expect(b.has-expansion-location()).to.equal true
+        expect(b.has-expansion-location).to.equal true
 
     it
       "Can be made mutable"
