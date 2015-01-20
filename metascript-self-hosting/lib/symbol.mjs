@@ -1,13 +1,15 @@
 #external module
 
 var Immutable = require 'immutable'
+var Ast = require './ast'
 
 var no-op = (ast, ctx) -> ast
 var transform-args = (ast, ctx) -> ast
 
 
+
 var Symbol = Immutable.Record {
-  id: ':error'
+  id: ":error"
 
 }
 
@@ -29,8 +31,8 @@ Symbol.tokens = {
   ":op": Symbol {
       id: ":op"
     }
-  ":indent": Symbol {
-      id: ":indent"
+  ":line": Symbol {
+      id: ":line"
     }
   "(": Symbol {
       id: "("
@@ -52,5 +54,6 @@ Symbol.tokens = {
     }
 
 }
+
 
 module.exports = Symbol

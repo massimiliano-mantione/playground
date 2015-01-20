@@ -50,12 +50,17 @@ Parser.prototype.error = (message, length) ->
     length
 
 
+
 Parser.prototype.reset-root = #->
   this..root ..! Parser.default-state.root
 
+Parser.prototype.reset-errors = #->
+  this..errors ..! Parser.default-state.errors
+
+
 Object.defineProperty
   Parser.prototype
-  "sourceIsEmpty"
+  "isSourceEmpty"
   {
     get: #-> this.source.size == 0
     set: #-> throw new Error 'Ast.prototype.sourceIsEmpty is not writable'
@@ -65,7 +70,7 @@ Object.defineProperty
 
 Object.defineProperty
   Parser.prototype
-  "sourceIsNotEmpty"
+  "isSourceLoaded"
   {
     get: #-> this.source.size > 0
     set: #-> throw new Error 'Ast.prototype.sourceIsNotEmpty is not writable'
@@ -139,6 +144,45 @@ Parser.prototype.load-file = (file-name) ->
       this.base-column
 
 
+Object.defineProperty
+  Parser.prototype
+  "tokenizer"
+  {
+    get: #-> this.tokenizers.get 0
+    set: #-> throw new Error 'Ast.prototype.tokenizer is not writable'
+    enumerable: true
+    configurable: false
+  }
 
+Parser.prototype.push-tokenizer = #->
+  this..tokenizers.push <.. #it
+
+Parser.prototype.pop-tokenizer = #->
+  if (this.tokenizers.size > 1)
+    this..tokenizers.pop <.. ()
+  else
+    this.error "Cannot pop the last tokenizer"
+
+Parser.prototype.tokenize-line = #->
+  if (this.done?)
+    return this.error "No more lines to parse"
+  if (this.line-done?)
+    return this.error "Current line has already been parsed"
+  ; We should check if making p mutable improves performance
+  var p = this
+  while (! this.line-done?)
+    p = p.tokenizer p
+  p.next-line()
+
+Parser.prototype.tokenize-source = #->
+  if (this.done?)
+    return this.error
+      if (this.source-empty?) "Source is empty"
+      else "Source has already been tokenized"
+  ; We should check if making p mutable improves performance
+  var p = this
+  while (! this.done?)
+    p = p.tokenize-line()
+  p
 
 module.exports = Parser
