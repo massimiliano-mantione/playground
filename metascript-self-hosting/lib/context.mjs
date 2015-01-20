@@ -21,8 +21,8 @@ var Context = Immutable.Record {
 
 Context.prototype.wrap = #-> new Wrapper (this, #it)
 
-Context.ctx? = #-> #it && #it.constructor == Context
-Context.wrapper? = #-> #it && #it.constructor == Wrapper
+Context.ctx? = #-> #it instanceof Context
+Context.wrapper? = #-> #it instanceof Wrapper
 
 Context.create = props -> new Context props
 

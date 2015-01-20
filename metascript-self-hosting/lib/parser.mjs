@@ -42,12 +42,14 @@ Object.defineProperty
   }
 
 Parser.prototype.error = (message, length) ->
-  this..errors.push <.. Msg.create-at
+  this..errors.push <.. Msg.create
     message
     this.source-name
     this.base-line + this.current-line
     this.base-column + this.current-column
-    length
+    this.base-line + this.current-line
+    this.base-column + this.current-column +
+      if (typeof length != 'undefined') length else 1
 
 
 
@@ -137,11 +139,13 @@ Parser.prototype.load-file = (file-name) ->
     var source = fs.readFileSync (file-name, {encoding: 'utf8'})
     this.load-string source
   catch (var e)
-    this..errors.push <.. Msg.create-at
+    this..errors.push <.. Msg.create
       e.message
       file-name
       this.base-line
       this.base-column
+      this.base-line
+      this.base-column + 1
 
 
 Object.defineProperty

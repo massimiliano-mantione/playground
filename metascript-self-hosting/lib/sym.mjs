@@ -13,6 +13,8 @@ var Sym = Immutable.Record {
 
 }
 
+Sym.error = Sym()
+
 Sym.create = props -> Sym props
 
 Sym.tokens = {

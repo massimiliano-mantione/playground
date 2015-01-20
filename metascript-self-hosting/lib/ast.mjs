@@ -1,6 +1,8 @@
 #external (module, arguments, Symbol)
 
 var Immutable = require 'immutable'
+var Loc = require './loc'
+var Sym = require './sym'
 
 var AstData = Immutable.Record {
   doc: null
@@ -12,83 +14,42 @@ var Ast = (
     sym
     val
     args
-    src-file
-    src-line-from
-    src-line-to
-    src-column-from
-    src-column-to
-    org-file
-    org-line-from
-    org-line-to
-    org-column-from
-    org-column-to
+    data
+    loc
     mutable?
   ) -> do!
-    if (! this instanceof Ast)
+    if (! (this instanceof Ast)) do
       return new Ast
         sym
         val
         args
-        src-file
-        src-line-from
-        src-line-to
-        src-column-from
-        src-column-to
-        org-file
-        org-line-from
-        org-line-to
-        org-column-from
-        org-column-to
+        data
+        loc
         mutable?
-    this.sym = sym
-    this.val = sym
+    this.sym =
+      if (sym instanceof Sym) sym
+      else Sym.error
+    this.val = val
     this.args = do
       var my-args = Immutable.List(args)
       if (mutable?)
         my-args = my-args.as-mutable()
       my-args
-    this.src-file = src-file
-    this.src-line-from = src-line-from
-    this.src-line-to = src-line-to
-    this.src-column-from = src-column-from
-    this.src-column-to = src-column-to
-    this.org-file = org-file
-    this.org-line-from = org-line-from
-    this.org-line-to = org-line-to
-    this.org-column-from = org-column-from
-    this.org-column-to = org-column-to
-    this.mutable? = if mutable? true else false
+    this.data =
+      if (typeof data != "undefined") data
+      else AstData.empty
+    this.loc =
+      if (typeof loc != "undefined") loc
+      else Loc.unknown
+    this.mutable? = ! ! mutable?
 
 Ast.prototype.clone = #-> new Ast
   this.sym
   this.val
   this.args
-  this.src-file
-  this.src-line-from
-  this.src-line-to
-  this.src-column-from
-  this.src-column-to
-  this.org-file
-  this.org-line-from
-  this.org-line-to
-  this.org-column-from
-  this.org-column-to
+  this.data
+  this.loc
   this.mutable?
-
-Object.defineProperty
-  Ast.prototype
-  "hasExpansionLocation"
-  {
-    get: #->
-      ( this.src-file != this.org-file ||
-        this.src-line-from != this.org-line-from ||
-        this.src-line-to != this.org-line-to ||
-        this.src-column-from != this.org-column-from ||
-        this.src-column-to != this.org-column-to)
-    set: #-> throw new Error 'Ast.prototype.hasExpansionLocation is not writable'
-    enumerable: true
-    configurable: false
-  }
 
 Ast.prototype.as-mutable = #->
   if (this.mutable?)
@@ -106,9 +67,16 @@ Ast.prototype.as-immutable = #-> do
   this
 
 Ast.prototype.with-mutations = #-> do
-  var mutated = this.as-mutable()
+  var (must-reconvert, mutated) =
+    if (this.mutable?)
+      (false, this)
+    else
+      (true, this.as-mutable())
   #it mutated
-  mutated.as-immutable()
+  if must-reconvert
+    mutated.as-immutable()
+  else
+    mutated
 
 Ast.prototype.set-property = (name, value) ->
   var result =
@@ -131,16 +99,8 @@ Ast.prototype.set-property = (name, value) ->
 #define-ast-setter sym
 #define-ast-setter val
 #define-ast-setter args
-#define-ast-setter srcFile
-#define-ast-setter srcLineFrom
-#define-ast-setter srcLineTo
-#define-ast-setter srcColumnFrom
-#define-ast-setter srcColumnTo
-#define-ast-setter orgFile
-#define-ast-setter orgLineFrom
-#define-ast-setter orgLineTo
-#define-ast-setter orgColumnFrom
-#define-ast-setter orgColumnTo
+#define-ast-setter data
+#define-ast-setter loc
 
 
 Ast.prototype.at = (idx, value) ->
@@ -423,6 +383,6 @@ Object.defineProperty
 
 
 
-Ast.ast? = #-> #it.constructor == Ast
+Ast.ast? = #-> #it instanceof Ast
 
 module.exports = Ast

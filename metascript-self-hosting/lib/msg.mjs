@@ -34,32 +34,18 @@ Msg.create = (message, source, line, column, line-to, column-to) ->
     column-to: number-or-value (column-to, (if (typeof column == "number") (column + 1) else 1))
   }
 
-Msg.create-at = (message, source, line, column, length) -> Msg.create
+Msg.from-location = (message, location) -> Msg.create
   message
-  source
-  line
-  column
-  line
-  column + number-or-value (length, 1)
+  location.source
+  location.line-from
+  location.column-from
+  location.line-to
+  location.column-to
 
 Msg.from-ast = (ast, message) -> do
-  var result = Msg {
-    message: message
-    source: ast.src-file
-    line: ast.src-line-from
-    column: ast.src-column-from
-    line-to: ast.src-line-to
-    column-to: ast.src-column-to
-  }
-  if (ast.has-expansion-location) do
-    var expansion = Msg {
-      message: "Expanded from here"
-      source: ast.org-file
-      line: ast.org-line-from
-      column: ast.org-column-from
-      line-to: ast.org-line-to
-      column-to: ast.org-column-to
-    }
+  var result = Msg.from-location (message, ast.loc.actual)
+  if (ast.loc.has-expansion-data) do
+    var expansion = Msg.from-location ("Expanded from here", ast.loc.original)
     result..details ..= (result.details.push expansion)
   result
 

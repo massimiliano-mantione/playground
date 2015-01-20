@@ -5,23 +5,29 @@ var expect = (require "chai").expect
 
 var Msg = require '../lib/msg'
 var Ast = require '../lib/ast'
+var Loc = require '../lib/loc'
 var Sym = require '../lib/sym'
 
 var sym = Sym.create {id: "sym"}
-var node-at = (src, ls, cs, org, lo, co) -> new Ast
+var location-at = (src, l, c) -> Loc.Location {
+  source: src
+  line-from: l
+  line-to: l
+  column-from: c
+  column-to: c + 1
+}
+
+var node-at = (actual, original) -> Ast
   sym
   null
   undefined
-  src
-  ls
-  ls
-  cs
-  cs + 1
-  if org org else src
-  if lo lo else ls
-  if lo lo else ls
-  if co co else cs
-  if co (co + 1) else (cs + 1)
+  undefined
+  Loc {
+      actual: actual
+      original:
+        if (typeof original != 'undefined') original
+        else actual
+    }
 
 
 describe
@@ -30,16 +36,22 @@ describe
     it
       "Can be created at a location"
       #->
-        var m = Msg.create-at ("msg", "src", 42, 12, 3)
+        var m = Msg.from-location ("msg", location-at("src", 42, 12))
         expect(m.message).to.equal "msg"
         expect(m.source).to.equal "src"
-        expect(m.column-to).to.equal 15
+        expect(m.column-to).to.equal 13
 
     it
       "Can be created from an ast node"
       #->
-        var ast = node-at ("src", 42, 12)
-        expect(ast.has-expansion-location).to.equal false
+        var ast = node-at location-at(("src", 42, 12))
+        expect(ast.loc.has-expansion-data).to.equal false
+        expect(ast.loc.actual.source).to.equal "src"
+        expect(ast.loc.actual.line-from).to.equal 42
+        expect(ast.loc.actual.line-to).to.equal 42
+        expect(ast.loc.actual.column-from).to.equal 12
+        expect(ast.loc.actual.column-to).to.equal 13
+        expect(ast.loc.actual).to.equal ast.loc.original
         var m = Msg.from-ast (ast, "msg")
         expect(m.message).to.equal "msg"
         expect(m.source).to.equal "src"
@@ -48,8 +60,10 @@ describe
     it
       "Can be created from an expanded ast node"
       #->
-        var ast = node-at ("src", 42, 12, "org", 420, 120)
-        expect(ast.has-expansion-location).to.equal true
+        var ast = node-at
+          location-at("src", 42, 12)
+          location-at("org", 420, 120)
+        expect(ast.loc.has-expansion-data).to.equal true
         var m = Msg.from-ast (ast, "msg")
         expect(m.message).to.equal "msg"
         expect(m.source).to.equal "src"

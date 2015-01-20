@@ -18,7 +18,7 @@ describe
     it
       "Can detect an ast node"
       #->
-        var ast = new Ast()
+        var ast = Ast()
         var o = {}
         expect(Ast.ast? ast).to.equal true
         expect(Ast.ast? o).to.equal false
@@ -91,11 +91,11 @@ describe
       #->
         var a = new Ast sym1
         var b
-        expect(a.has-expansion-location).to.equal false
-        b = (a..src-file ..! "other-file")
-        expect(b.has-expansion-location).to.equal true
-        b = (a..src-line-from ..! 42)
-        expect(b.has-expansion-location).to.equal true
+        expect(a.loc.has-expansion-data).to.equal false
+        b = a.set-loc (a.loc..original..source ..! "other-file")
+        expect(b.loc.has-expansion-data).to.equal true
+        b = a.set-loc (a.loc..original..line-from ..! 42)
+        expect(b.loc.has-expansion-data).to.equal true
 
     it
       "Can be made mutable"
