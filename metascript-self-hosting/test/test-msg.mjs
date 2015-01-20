@@ -5,9 +5,9 @@ var expect = (require "chai").expect
 
 var Msg = require '../lib/msg'
 var Ast = require '../lib/ast'
-var Symbol = require '../lib/symbol'
+var Sym = require '../lib/sym'
 
-var sym = Symbol.create {id: "sym"}
+var sym = Sym.create {id: "sym"}
 var node-at = (src, ls, cs, org, lo, co) -> new Ast
   sym
   null

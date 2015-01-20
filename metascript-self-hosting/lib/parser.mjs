@@ -3,7 +3,7 @@
 
 var Immutable = require 'immutable'
 var tokenizers = require './tokenizers'
-var symbol = require './symbol'
+var Sym = require './sym'
 var Ast = require './ast'
 var Msg = require './msg'
 
@@ -24,7 +24,7 @@ var Parser = Immutable.Record {
   group-stack: Immutable.Stack()
   errors: Immutable.List()
   tab-size: -1
-  root: Ast (symbol.tokens.root, undefined, [],
+  root: Ast (Sym.tokens.root, undefined, [],
       "[unknown]", 1, 1, 1, 1,
       "[unknown]", 1, 1, 1, 1)
 }

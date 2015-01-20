@@ -4,11 +4,11 @@
 var expect = (require "chai").expect
 
 var Ast = require '../lib/ast'
-var Symbol = require '../lib/symbol'
+var Sym = require '../lib/sym'
 
-var sym1 = Symbol.create {id: "sym1"}
-var sym2 = Symbol.create {id: "sym2"}
-var sym-arg = Symbol.create {id: "sym-arg"}
+var sym1 = Sym.create {id: "sym1"}
+var sym2 = Sym.create {id: "sym2"}
+var sym-arg = Sym.create {id: "sym-arg"}
 var arg0 = new Ast sym-arg
 var arg1 = new Ast sym-arg
 

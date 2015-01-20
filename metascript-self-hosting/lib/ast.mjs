@@ -2,6 +2,12 @@
 
 var Immutable = require 'immutable'
 
+var AstData = Immutable.Record {
+  doc: null
+  type: null
+}
+AstData.empty = AstData()
+
 var Ast = (
     sym
     val

@@ -4,7 +4,6 @@
 var expect = (require "chai").expect
 
 var Ast = require '../lib/ast'
-var Symbol = require '../lib/symbol'
 var Context = require '../lib/context'
 
 describe

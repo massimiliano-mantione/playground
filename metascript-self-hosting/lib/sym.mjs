@@ -8,52 +8,52 @@ var transform-args = (ast, ctx) -> ast
 
 
 
-var Symbol = Immutable.Record {
+var Sym = Immutable.Record {
   id: ":error"
 
 }
 
-Symbol.create = props -> Symbol props
+Sym.create = props -> Sym props
 
-Symbol.tokens = {
-  ":root": Symbol {
+Sym.tokens = {
+  ":root": Sym {
       id: ":root"
     }
-  ":tag": Symbol {
+  ":tag": Sym {
       id: ":tag"
     }
-  ":val": Symbol {
+  ":val": Sym {
       id: ":val"
     }
-  ":string-chunk": Symbol {
+  ":string-chunk": Sym {
       id: ":string-chunk"
     }
-  ":op": Symbol {
+  ":op": Sym {
       id: ":op"
     }
-  ":line": Symbol {
+  ":line": Sym {
       id: ":line"
     }
-  "(": Symbol {
+  "(": Sym {
       id: "("
     }
-  ")": Symbol {
+  ")": Sym {
       id: ")"
     }
-  "[": Symbol {
+  "[": Sym {
       id: "["
     }
-  "]": Symbol {
+  "]": Sym {
       id: "]"
     }
-  "{": Symbol {
+  "{": Sym {
       id: "{"
     }
-  "}": Symbol {
+  "}": Sym {
       id: "}"
     }
 
 }
 
 
-module.exports = Symbol
+module.exports = Sym

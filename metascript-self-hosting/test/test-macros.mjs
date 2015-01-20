@@ -5,7 +5,6 @@ var expect = (require "chai").expect
 var Immutable = require 'immutable'
 
 var Ast = require '../lib/ast'
-var Symbol = require '../lib/symbol'
 var Context = require '../lib/context'
 
 var R = Immutable.Record {
