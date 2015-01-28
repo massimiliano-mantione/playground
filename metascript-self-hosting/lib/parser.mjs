@@ -6,6 +6,7 @@ var tokenizers = require './tokenizers'
 var Sym = require './sym'
 var Ast = require './ast'
 var Msg = require './msg'
+var Loc = require './loc'
 
 
 var GrouperState = Immutable.Record {
@@ -24,9 +25,7 @@ var Parser = Immutable.Record {
   group-stack: Immutable.Stack()
   errors: Immutable.List()
   tab-size: -1
-  root: Ast (Sym.tokens.root, undefined, [],
-      "[unknown]", 1, 1, 1, 1,
-      "[unknown]", 1, 1, 1, 1)
+  root: Ast (Sym.tokens[":root"])
 }
 
 Parser.default-state = Parser()
@@ -147,6 +146,47 @@ Parser.prototype.load-file = (file-name) ->
       this.base-line
       this.base-column + 1
 
+Parser.prototype.current-location = length -> Loc.Location {
+    source: this.source-name
+    line-from: this.current-line
+    line-to: this.current-line
+    column-from: this.current-column
+    column-to: this.current-column + length
+  }
+
+Parser.prototype.new-token = (sym, text, value) -> do
+  var location = this.current-location text.length
+  Ast
+    sym
+    if (typeof value != 'undefined') value else text
+    undefined
+    undefined
+    Loc
+      location
+      location
+
+Parser.prototype.new-delimiter-token = (sym) -> do
+  var location = this.current-location 1
+  Ast
+    sym
+    undefined
+    undefined
+    undefined
+    Loc
+      location
+      location
+
+Parser.prototype.new-line-start-token = indentation -> do
+  var location = this.current-location 1
+  Ast
+    Sym.tokens[":l"]
+    indentation
+    undefined
+    undefined
+    Loc
+      location
+      location
+
 
 Object.defineProperty
   Parser.prototype
@@ -168,24 +208,24 @@ Parser.prototype.pop-tokenizer = #->
     this.error "Cannot pop the last tokenizer"
 
 Parser.prototype.tokenize-line = #->
-  if (this.done?)
-    return this.error "No more lines to parse"
-  if (this.line-done?)
-    return this.error "Current line has already been parsed"
-  ; We should check if making p mutable improves performance
   var p = this
-  while (! this.line-done?)
+  if (p.done?)
+    return p.error "No more lines to parse"
+  if (p.line-done?)
+    return p.error "Current line has already been parsed"
+  ; We should check if making p mutable improves performance
+  while (! p.line-done?)
     p = p.tokenizer p
   p.next-line()
 
 Parser.prototype.tokenize-source = #->
-  if (this.done?)
-    return this.error
-      if (this.source-empty?) "Source is empty"
+  var p = this
+  if (p.done?)
+    return p.error
+      if (p.source-empty?) "Source is empty"
       else "Source has already been tokenized"
   ; We should check if making p mutable improves performance
-  var p = this
-  while (! this.done?)
+  while (! p.done?)
     p = p.tokenize-line()
   p
 

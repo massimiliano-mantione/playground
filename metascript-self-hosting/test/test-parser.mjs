@@ -1,4 +1,4 @@
-#external (describe, it)
+#external (describe, it, before-each)
 #metaimport '../lib/macros'
 
 var expect = (require "chai").expect
@@ -9,10 +9,14 @@ var Parser = require '../lib/parser'
 describe
   "Parser"
   #->
+    var p
+
+    before-each #-> do!
+      p = Parser()
+
     it
       "Can load a string of source code and iterate its lines"
       #->
-        var p = Parser()
         expect(p.source.size).to.equal 0
         p.load-string <=.. 'my\nsource\ncode'
         expect(p.source.to-array()).to.eql(['my', 'source', 'code'])
@@ -33,7 +37,33 @@ describe
     it
       "Gives an error when attempting to load a non existent file"
       #->
-        var p = Parser()
         p.load-file <=.. 'my\nsource\ncode'
         expect(p.has-errors).to.eql true
         expect(p.errors..[0].message.index-of "no such file" >= 0).to.eql true
+
+    it
+      "Can tokenize tags"
+      #->
+        p.load-string <=.. 'my source code'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':tag', 'my' ],
+            [ ':tag', 'source' ],
+            [ ':tag', 'code' ] ] ])
+
+    it
+      "Can tokenize numbers"
+      #->
+        expect(p.source-empty?).to.equal true
+        expect(p.root.size).to.equal 0
+        p.load-string <=.. 'numbers 1 2 3.5 123.456e-3 123.456e11'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':tag', 'numbers' ],
+            [ ':val', 1 ],
+            [ ':val', 2 ],
+            [ ':val', 3.5 ],
+            [ ':val', 0.123456 ],
+            [ ':val', 12345600000000 ] ] ])

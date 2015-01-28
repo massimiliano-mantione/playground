@@ -27,15 +27,12 @@ Sym.tokens = {
   ":val": Sym {
       id: ":val"
     }
-  ":string-chunk": Sym {
-      id: ":string-chunk"
-    }
   ":op": Sym {
       id: ":op"
     }
-  ":line": Sym {
-      id: ":line"
-    }
+
+  ; The following tokens are produced by the parser
+  ; but they are eliminated by the grouping pass
   "(": Sym {
       id: "("
     }
@@ -54,7 +51,38 @@ Sym.tokens = {
   "}": Sym {
       id: "}"
     }
+  ",": Sym {
+      id: ","
+    }
+  ; Line start (val is the indentation level)
+  ":l": Sym {
+      id: ":l"
+    }
+  ; Quoted string start (val is the delimiter)
+  ":qs": Sym {
+      id: ":qs"
+    }
+  ; Quoted string chunk (val is the chunk)
+  ":str": Sym {
+      id: ":str"
+    }
 
+  ; The following tokens are produced by the grouping pass
+  "()": Sym {
+      id: "()"
+    }
+  "[]": Sym {
+      id: "[]"
+    }
+  "{}": Sym {
+      id: "{}"
+    }
+  "hblk": Sym {
+      id: "()"
+    }
+  "vblk": Sym {
+      id: "()"
+    }
 }
 
 

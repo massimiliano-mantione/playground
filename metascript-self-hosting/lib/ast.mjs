@@ -51,6 +51,25 @@ Ast.prototype.clone = #-> new Ast
   this.loc
   this.mutable?
 
+Object.defineProperty
+  Ast.prototype
+  "id"
+  {
+    get: #-> this.sym.id
+    set: #-> throw new Error 'Ast.prototype.id is not writable'
+    enumerable: true
+    configurable: false
+  }
+
+Ast.prototype.array-dump = #->
+  var result = [this.id]
+  if (this.val != undefined)
+    result.push this.val
+  if (this.size > 0)
+    result.push
+      this.args.map(#-> #it.array-dump()).to-array()
+  result
+
 Ast.prototype.as-mutable = #->
   if (this.mutable?)
     ; Add some more info to the error
