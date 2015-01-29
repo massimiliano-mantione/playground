@@ -55,8 +55,6 @@ describe
     it
       "Can tokenize numbers"
       #->
-        expect(p.source-empty?).to.equal true
-        expect(p.root.size).to.equal 0
         p.load-string <=.. 'numbers 1 2 3.5 123.456e-3 123.456e11'
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
@@ -67,3 +65,25 @@ describe
             [ ':val', 3.5 ],
             [ ':val', 0.123456 ],
             [ ':val', 12345600000000 ] ] ])
+
+    it
+      "Produces source location info"
+      #->
+        p.load-string <=.. 'a 12\n  b cde'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':tag', 'a' ],
+            [ ':val', 12 ],
+            [ ':l', 2 ],
+            [ ':tag', 'b' ],
+            [ ':tag', 'cde' ] ] ])
+        expect(p.root.args.map(#-> #it.loc.actual.line-from).to-array()).to.eql
+          ([1, 1, 1, 2, 2, 2])
+        expect(p.root.args.map(#-> #it.loc.actual.line-to).to-array()).to.eql
+          ([1, 1, 1, 2, 2, 2])
+        expect(p.root.args.map(#-> #it.loc.actual.column-from).to-array()).to.eql
+          ([1, 1, 3, 1, 3, 5])
+        expect(p.root.args.map(#-> #it.loc.actual.column-to).to-array()).to.eql
+          ([1, 2, 5, 3, 4, 8])
+        expect(p.root.args.some(#-> #it.loc.actual != #it.loc.original)).to.equal false

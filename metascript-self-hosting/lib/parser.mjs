@@ -146,46 +146,56 @@ Parser.prototype.load-file = (file-name) ->
       this.base-line
       this.base-column + 1
 
-Parser.prototype.current-location = length -> Loc.Location {
+Parser.prototype.current-location-at-column = (column, length) -> Loc.Location {
     source: this.source-name
-    line-from: this.current-line
-    line-to: this.current-line
-    column-from: this.current-column
-    column-to: this.current-column + length
+    line-from: this.base-line + this.current-line
+    line-to: this.base-line + this.current-line
+    column-from: this.base-column + column
+    column-to: this.base-column + column + length
   }
 
-Parser.prototype.new-token = (sym, text, value) -> do
-  var location = this.current-location text.length
+Parser.prototype.current-location = length ->
+  this.current-location-at-column (this.current-column, length)
+
+Parser.prototype.new-token = (sym, text, value, column) -> do
+  if (typeof column == 'undefined')
+    column = this.current-column
+  var location = this.current-location-at-column (column, text.length)
   Ast
     sym
     if (typeof value != 'undefined') value else text
     undefined
     undefined
-    Loc
-      location
-      location
+    Loc {
+      actual: location
+      original: location
+    }
 
-Parser.prototype.new-delimiter-token = (sym) -> do
-  var location = this.current-location 1
+Parser.prototype.new-delimiter-token = (sym, column) -> do
+  if (typeof column == 'undefined')
+    column = this.current-column
+  var location = this.current-location-at-column (column, 1)
   Ast
     sym
     undefined
     undefined
     undefined
-    Loc
-      location
-      location
+    Loc {
+      actual: location
+      original: location
+    }
 
-Parser.prototype.new-line-start-token = indentation -> do
-  var location = this.current-location 1
+Parser.prototype.new-line-start-token = (indentation, length) -> do
+  var location = this.current-location-at-column (0, length)
   Ast
     Sym.tokens[":l"]
     indentation
     undefined
     undefined
-    Loc
-      location
-      location
+    Loc {
+      actual: location
+      original: location
+    }
 
 
 Object.defineProperty

@@ -4,8 +4,6 @@
 var Immutable = require 'immutable'
 var Sym = require "./sym"
 
-;new-token = (sym, val, src, line, column, length) ->
-
 
 var try-match = (string, pattern) ->
   var m = string.match(pattern);
@@ -58,7 +56,7 @@ tokenizers..base ..= p ->
             1
         else 1
       c ++
-    tokens.push (p.new-line-start-token indent)
+    tokens.push (p.new-line-start-token (indent, c))
     rest = consume-chars (indent, rest)
 
   var has-error = false
@@ -78,7 +76,7 @@ tokenizers..base ..= p ->
     else if (("()[]{},".index-of cc) >= 0)
       ; Delimiter
       text = cc
-      token = p.new-delimiter-token text
+      token = p.new-delimiter-token (text, c)
     else if (cc == ";")
       ; Comment
       text = rest
@@ -88,7 +86,7 @@ tokenizers..base ..= p ->
       if (token == null)
         text = try-match (rest, tag-pattern)
         if (text != "")
-          token = p.new-token (Sym.tokens[":tag"], text)
+          token = p.new-token (Sym.tokens[":tag"], text, text, c)
       ; Number
       if (token == null)
         text = try-match (rest, number-base-pattern)
@@ -97,14 +95,14 @@ tokenizers..base ..= p ->
           var exp = try-match (after-number, number-exponent-pattern)
           if (exp != "")
             text += exp
-          token = p.new-token (Sym.tokens[":val"], text, Number text)
+          token = p.new-token (Sym.tokens[":val"], text, Number text, c)
       ; Operator
       if (token == null)
         text = try-match (rest, hash-operator-pattern)
         if (text == "")
           text = try-match (rest, operator-pattern)
         if (text != "")
-          token = p.new-token (Sym.tokens[":op"], text)
+          token = p.new-token (Sym.tokens[":op"], text, text, c)
       ; Error
       if (token == null && ! has-error)
         has-error = true
@@ -121,12 +119,9 @@ tokenizers..base ..= p ->
     if (token != null)
       tokens.push token
 
-  ;p.with-mutations #->
-  ;  #it..current-column ..! c
-  ;  #it..root.concat <.. tokens
-  p..current-column ..= c
-  p..root.concat <=.. tokens
-  p
+  p.with-mutations #->
+    #it..current-column ..! c
+    #it..root.concat <.. tokens
 
 
 
