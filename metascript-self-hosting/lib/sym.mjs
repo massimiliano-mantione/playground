@@ -58,11 +58,11 @@ Sym.tokens = {
   ":l": Sym {
       id: ":l"
     }
-  ; Quoted string start (val is the delimiter)
-  ":qs": Sym {
-      id: ":qs"
+  ; String literal start (val is the delimiter)
+  ":sls": Sym {
+      id: ":sls"
     }
-  ; Quoted string chunk (val is the chunk)
+  ; String literal chunk (val is the chunk)
   ":str": Sym {
       id: ":str"
     }

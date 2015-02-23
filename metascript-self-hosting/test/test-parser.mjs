@@ -63,8 +63,77 @@ describe
             [ ':val', 1 ],
             [ ':val', 2 ],
             [ ':val', 3.5 ],
-            [ ':val', 0.123456 ],
-            [ ':val', 12345600000000 ] ] ])
+            [ ':val', 123.456e-3 ],
+            [ ':val', 123.456e11 ] ] ])
+
+    it
+      "Can tokenize empty strings"
+      #->
+        p.load-string <=.. '1 "" 2 \'\' 3'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':val', 1 ],
+            [ ':val', "" ],
+            [ ':val', 2 ],
+            [ ':val', "" ],
+            [ ':val', 3 ] ] ])
+
+    it
+      "Can tokenize simple strings"
+      #->
+        p.load-string <=.. '1 "abc" 2 \'def\' 3'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':val', 1 ],
+            [ ':sls', "\"" ],
+            [ ':str', "abc" ],
+            [ ':val', 2 ],
+            [ ':sls', "'" ],
+            [ ':str', "def" ],
+            [ ':val', 3 ] ] ])
+
+    it
+      "Can tokenize multiline interpolated strings"
+      #->
+        p.load-string <=.. ''.concat
+          '1 """abcdef\n'
+          '     ghijkl\n'
+          '     mnopqr\n'
+          'stuvwx\n'
+          '  """ 2'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':val', 1 ],
+            [ ':sls', "\"\"\"" ],
+            [ ':str', "abcdef" ],
+            [ ':str', " ghijkl" ],
+            [ ':str', " mnopqr" ],
+            [ ':str', "stuvwx" ],
+            [ ':val', 2 ] ] ])
+
+    it
+      "Can tokenize multiline literal strings"
+      #->
+        p.load-string <=.. ''.concat
+          "1 '''abcdef\n"
+          "     ghijkl\n"
+          "     mnopqr\n"
+          "stuvwx\n"
+          "  ''' 2"
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':val', 1 ],
+            [ ':sls', "'''" ],
+            [ ':str', "abcdef\n" ],
+            [ ':str', "     ghijkl\n" ],
+            [ ':str', "     mnopqr\n" ],
+            [ ':str', "stuvwx\n" ],
+            [ ':str', "  " ],
+            [ ':val', 2 ] ] ])
 
     it
       "Produces source location info"

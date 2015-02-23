@@ -80,7 +80,26 @@ tokenizers..base ..= p ->
     else if (cc == ";")
       ; Comment
       text = rest
-    ; Put string handling here
+    else if (cc == '"' || cc == "'")
+      var
+        delimiter = cc
+        index = 1
+      while (index < rest.length && (rest.char-at index) == cc)
+        delimiter += cc
+        index ++
+      if (delimiter.length == 2)
+        ; Empty string can be handled directly
+        text = delimiter
+        token = p.new-token (Sym.tokens[":val"], text, "", c)
+      else
+        ; We must exit this loop setting up the parser to handle the string
+        token = p.new-token (Sym.tokens[":sls"], delimiter, delimiter, c)
+        return
+          p.with-mutations #->
+            #it..current-column ..! c + delimiter.length
+            #it..root.concat <.. tokens
+            #it..root.push <.. token
+            #it.push-tokenizer (tokenizers..string-literal-handler delimiter)
     else
       ; Tag
       if (token == null)
@@ -124,6 +143,58 @@ tokenizers..base ..= p ->
     #it..root.concat <.. tokens
 
 
+tokenizers..string-literal-handler ..= delimiter ->
+  p ->
+    var
+      src = p.source-line
+      start = p.current-column
+      c = start
+      single-quote? = delimiter.char-at 0 == "'"
+      single-line? = delimiter.length == 1
+      value = ""
+      token = null
+      var leading-spaces-stripped = false
+
+    ; If necessary, handle leading spaces
+    if (c == 0 && ! single-quote?)
+      while (c < src.length && (src.char-at c == " " || src.char-at c == "\t"))
+        c++
+      if (c > 0)
+        leading-spaces-stripped = true
+        value = " "
+
+    while (c < src.length)
+      ; Test if we found the delimiter
+      if (src.substr (c, delimiter.length) == delimiter)
+        token =
+          if (leading-spaces-stripped && value == " ") null
+          else p.new-token
+            Sym.tokens[":str"]
+            src.substring(start, c) + delimiter
+            value
+        return
+          p.with-mutations #->
+            #it..current-column ..! c + delimiter.length
+            if (token != null)
+              #it..root.push <.. token
+            #it.pop-tokenizer()
+
+      ; Handle current character
+      var cc = src.char-at c
+      ; TODO: escape codes
+      value += cc
+      c++
+
+    ; We reacher EOL without finding the delimiter
+    if (single-quote?)
+      value += "\n"
+    token = p.new-token
+      Sym.tokens[":str"]
+      src.substring(start, c)
+      value
+    p.with-mutations #->
+      #it..current-column ..! c
+      #it..root.push <.. token
 
 
 module.exports = tokenizers

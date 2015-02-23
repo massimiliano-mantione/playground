@@ -8,7 +8,6 @@ var Ast = require './ast'
 var Msg = require './msg'
 var Loc = require './loc'
 
-
 var GrouperState = Immutable.Record {
 
 }
