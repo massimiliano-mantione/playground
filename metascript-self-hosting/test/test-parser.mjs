@@ -72,7 +72,7 @@ describe
           '  ;;;;;\n'
           '  I am an indented doc\n'
           '  and I have a second line\n'
-          '  ;;;;;\n'
+          '  and a third;;;;\n'
           '  ghi\n'
           ';;;;; I am a stranger doc\n'
           ';;;;; I go on\n'
@@ -91,6 +91,7 @@ describe
             [ ':l', 2 ],
             [ ':doc', "  I am an indented doc" ],
             [ ':doc', "  and I have a second line" ],
+            [ ':doc', "  and a third" ],
             [ ':l', 2 ],
             [ ':tag', 'ghi' ],
             [ ':l', 0 ],
