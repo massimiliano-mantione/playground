@@ -42,6 +42,66 @@ describe
         expect(p.errors..[0].message.index-of "no such file" >= 0).to.eql true
 
     it
+      "Handles comments"
+      #->
+        p.load-string <=.. ''.concat
+          '; I am a comment\n'
+          '  abc\n'
+          '  def ; I am another comment\n'
+          '  ; I am an indented comment\n'
+          '  ghi'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':l', 2 ],
+            [ ':tag', 'abc' ],
+            [ ':l', 2 ],
+            [ ':tag', 'def' ],
+            [ ':l', 2 ],
+            [ ':l', 2 ],
+            [ ':tag', 'ghi' ] ] ])
+
+    it
+      "Handles docs"
+      #->
+        p.load-string <=.. ''.concat
+          ';;; I am a doc\n'
+          ';;;\n'
+          '  abc\n'
+          '  def ; I am another comment\n'
+          '  ;;;;;\n'
+          '  I am an indented doc\n'
+          '  and I have a second line\n'
+          '  ;;;;;\n'
+          '  ghi\n'
+          ';;;;; I am a stranger doc\n'
+          ';;;;; I go on\n'
+          'and I ;;; doc ;;; myself\n'
+          ';;;; for real ;;;\n'
+          ';;;\n'
+          '  jkl'
+        p.tokenize-source <=.. ()
+        expect(p.root.array-dump()).to.eql([':root',
+          [ [ ':l', 0 ],
+            [ ':doc', " I am a doc" ],
+            [ ':l', 2 ],
+            [ ':tag', 'abc' ],
+            [ ':l', 2 ],
+            [ ':tag', 'def' ],
+            [ ':l', 2 ],
+            [ ':doc', "  I am an indented doc" ],
+            [ ':doc', "  and I have a second line" ],
+            [ ':l', 2 ],
+            [ ':tag', 'ghi' ],
+            [ ':l', 0 ],
+            [ ':doc', " I am a stranger doc" ],
+            [ ':doc', ";;;;; I go on" ],
+            [ ':doc', "and I ;;; doc ;;; myself" ],
+            [ ':doc', ";;;; for real ;;;" ],
+            [ ':l', 2 ],
+            [ ':tag', 'jkl' ] ] ])
+
+    it
       "Can tokenize tags"
       #->
         p.load-string <=.. 'my source code'
@@ -100,6 +160,7 @@ describe
         p.load-string <=.. ''.concat
           '1 """abcdef\n'
           '     ghijkl\n'
+          '     zz\tz\x2Fzz\123z\u0AFAzz\n'
           '     mnopqr\n'
           'stuvwx\n'
           '  """ 2'
@@ -110,6 +171,7 @@ describe
             [ ':sls', "\"\"\"" ],
             [ ':str', "abcdef" ],
             [ ':str', " ghijkl" ],
+            [ ':str', " zz\tz\x2Fzz\123z\u0AFAzz" ],
             [ ':str', " mnopqr" ],
             [ ':str', "stuvwx" ],
             [ ':val', 2 ] ] ])

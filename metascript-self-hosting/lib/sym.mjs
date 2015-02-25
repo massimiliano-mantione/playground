@@ -78,10 +78,13 @@ Sym.tokens = {
       id: "{}"
     }
   "hblk": Sym {
-      id: "()"
+      id: "(,)"
     }
   "vblk": Sym {
-      id: "()"
+      id: "(|)"
+    }
+  ":doc": Sym {
+      id: ":doc"
     }
 }
 

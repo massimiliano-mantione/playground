@@ -6,7 +6,7 @@ var Sym = require "./sym"
 
 
 var try-match = (string, pattern) ->
-  var m = string.match(pattern);
+  var m = string.match(pattern)
   if (m != null)
     m[0]
   else
@@ -34,6 +34,13 @@ var number-base-pattern = new RegExp "^[0-9]*\\.?[0-9]+"
 var number-exponent-pattern = new RegExp "^[eE][\-+]?[0-9]+"
 var hash-operator-pattern = new RegExp "^\#([-][\>]?)*([\#_$a-zA-Z0-9\xA0-\uFFFF]|([-][\>]?))*[\!\?]*"
 var operator-pattern = new RegExp "^[\\\+\*\-\/<>\:\~\|\^\#\@\!\?\&\\.\=\~\`\%]+"
+var comment-char-pattern = new RegExp "^[;]+"
+var spaces-pattern = new RegExp "^[ \t]*$"
+
+var hex-char-pattern = new RegExp "^[0-9a-fA-F]{2}$"
+var unicode-char-pattern = new RegExp "^[0-9a-fA-F]{4}$"
+var octal-char-pattern = new RegExp "^[0-7]{3}$"
+var octal-digit-pattern = new RegExp "^[0-7]$"
 
 tokenizers..base ..= p ->
   var
@@ -80,6 +87,22 @@ tokenizers..base ..= p ->
     else if (cc == ";")
       ; Comment
       text = rest
+      var doc-mark = try-match (rest, comment-char-pattern)
+      ; Doc
+      if (doc-mark.length > 2)
+        var doc-text = rest.substring (doc-mark.length, rest.length)
+        if (doc-text.length > 0 && ! spaces-pattern.test doc-text)
+          tokens.push p.new-token
+            Sym.tokens[":doc"]
+            doc-text
+            doc-text
+            c + doc-mark.length
+        return
+          p.with-mutations #->
+            #it..current-column ..! c + rest.length
+            #it..root.concat <.. tokens
+            #it.push-tokenizer (tokenizers..doc-handler)
+      token = null
     else if (cc == '"' || cc == "'")
       var
         delimiter = cc
@@ -181,11 +204,60 @@ tokenizers..string-literal-handler ..= delimiter ->
 
       ; Handle current character
       var cc = src.char-at c
-      ; TODO: escape codes
+      if (cc == "\\" && ! single-quote?)
+        c++
+        cc = src.char-at c
+        c++
+        if (cc == "b")
+          cc = "\b"
+        else if (cc == "f")
+          cc = "\f"
+        else if (cc == "n")
+          cc = "\n"
+        else if (cc == "r")
+          cc = "\r"
+        else if (cc == "t")
+          cc = "\t"
+        else if (cc == "v")
+          cc = "\v"
+        else if (cc == "\"")
+          cc = "\""
+        else if (cc == "\'")
+          cc = "\'"
+        else if (cc == "\\")
+          cc = "\\"
+        else if (cc == "x")
+          var latin1Code = src.substr(c, 2);
+          if (hex-char-pattern.test latin1Code)
+            c += 2
+            cc = String.fromCharCode(parseInt(latin1Code, 16))
+          else
+            p = p.error ("Unrecognized hex escape '" + latin1Code + "'")
+            cc = "?"
+        else if (cc == "u")
+          var unicodeCode = src.substr(c, 4)
+          if (unicode-char-pattern.test unicodeCode)
+            c += 4
+            cc = String.fromCharCode(parseInt(unicodeCode, 16))
+          else
+            p = p.error ("Unrecognized unicode escape '" + unicodeCode + "'")
+            cc = "?"
+        else if (octal-digit-pattern.test cc)
+          var octalCode = src.substr(c, 3)
+          if (octal-char-pattern.test octalCode)
+            c += 3
+            cc = String.fromCharCode(parseInt(octalCode, 8))
+          else
+            p = p.error ("Unrecognized octal escape '" + octalCode + "'")
+            cc = "?"
+        else
+          p = p.error ("Unrecognized escape code '" + cc + "'")
+          cc = "?"
+      else
+        c++
       value += cc
-      c++
 
-    ; We reacher EOL without finding the delimiter
+    ; We reached EOL without finding the delimiter
     if (single-quote?)
       value += "\n"
     token = p.new-token
@@ -196,5 +268,42 @@ tokenizers..string-literal-handler ..= delimiter ->
       #it..current-column ..! c
       #it..root.push <.. token
 
+tokenizers..doc-handler ..= p ->
+  var
+    src = p.source-line
+    start = p.current-column
+    rest = src.substring start
+    marker-index = rest.index-of ";;;"
+
+  p.with-mutations
+    if (marker-index < 0) #->
+      #it..current-column ..! src.length
+      #it..root.push <.. p.new-token
+        Sym.tokens[":doc"]
+        rest
+        rest
+        start
+    else do
+      var
+        doc-text = rest.substring (0, marker-index)
+        at-marker = rest.substring marker-index
+        marker = try-match (at-marker, comment-char-pattern)
+        post-doc-text = at-marker.substring marker.length
+        doc-done = post-doc-text.length == 0
+      if (doc-done)
+        if (spaces-pattern.test doc-text)
+          doc-text = null
+      else
+        doc-text = rest
+      #-> do!
+        #it..current-column ..! src.length
+        if (doc-text != null)
+          #it..root.push <.. p.new-token
+            Sym.tokens[":doc"]
+            doc-text
+            doc-text
+            start
+        if (doc-done)
+          #it.pop-tokenizer()
 
 module.exports = tokenizers
