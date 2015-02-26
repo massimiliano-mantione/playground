@@ -23,6 +23,7 @@ if (max-clients == undefined || transformer == undefined || baseURI == undefined
   process.exit()
 
 var
+  test-start-time = Date.now()
   Socket = primus.createSocket
     {
       transformer: transformer
@@ -108,7 +109,10 @@ set-timeout
     set-timeout
       #->
         console.log "Generating log..."
-        var log = []
+        var log = {
+          start-time: test-start-time
+          clients: []
+        }
         clients.for-each #->
           var data = {
             client: #it.index
@@ -117,7 +121,7 @@ set-timeout
           }
           data.messages.for-each #->
             delete #it.filler
-          log.push data
+          log.clients.push data
         console.log "Writing log..."
         console.error (JSON.stringify log)
         console.log "Done."
