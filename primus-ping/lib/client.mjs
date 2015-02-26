@@ -54,7 +54,6 @@ var send-message = client ->
   client.write (JSON.stringify message)
 
 var receive-message = (client, data) ->
-  console.log ("RECEIVED")
   var message = JSON.parse data
   client.messages[message.message-id].received = Date.now()
 
