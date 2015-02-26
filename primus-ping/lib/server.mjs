@@ -66,8 +66,9 @@ var handle-connection = spark ->
 
   spark.on
     'end'
-    (reasonCode, description) ->
-      console.log ("Connection " + spark.connection-id + " ended (code " + reasonCode + ", " + description + ")")
+    (reason-code, description) ->
+      if (reason-code ? || description ?)
+        console.log ("Connection " + spark.connection-id + " ended (code " + reason-code + ", " + description + ")")
       delete connections[spark.connection-id]
 
 primus.save 'primus.js'

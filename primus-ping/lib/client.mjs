@@ -13,12 +13,13 @@ var
   rampspeed = args.rampspeed ; Milliseconds between client generation
   period = args.period ; Milliseconds between ping messages
   duration = args.duration ; Test duration in seconds
+  finalwait = args.finalwait ; Wait time to receive messages after stopping clients in seconds
 
-if (max-clients == undefined || transformer == undefined || baseURI == undefined || rampspeed == undefined || period == undefined || duration == undefined)
+if (max-clients == undefined || transformer == undefined || baseURI == undefined || rampspeed == undefined || period == undefined || duration == undefined || finalwait == undefined)
   console.log "Error."
   console.log ""
   console.log "Usage:"
-  console.log "\tclient --websocket ws://127.0.0.1:8844 --clients 10 --transformer sockjs --rampspeed 5 --period 1000 --duration 10"
+  console.log "\tclient --websocket ws://127.0.0.1:8844 --clients 10 --transformer sockjs --rampspeed 5 --period 1000 --duration 10 --finalwait 5"
   process.exit()
 
 var
@@ -92,9 +93,12 @@ client-generator-timer = set-interval
 
 send-timer = set-interval
   #->
+    var start-time = Date.now()
     console.log ("Sending " + clients.length + " messages")
     clients.for-each #->
       send-message #it
+    var end-time = Date.now()
+    console.log ("  Send time: " + (end-time - start-time))
   period
 
 set-timeout
