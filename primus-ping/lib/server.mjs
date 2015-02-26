@@ -78,7 +78,7 @@ primus.on
 
 set-interval
   #->
-    console.log ("Handled " + interval-message-counter + " messages (total " + message-counter + ")")
+    console.log ("Handled " + interval-message-counter + " messages (connections " + connection-counter + ", total " + message-counter + ")")
     interval-message-counter = 0
   1000
 
