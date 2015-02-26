@@ -1,6 +1,9 @@
 #external
   __dirname
   process
+  set-interval
+  clear-interval
+
 
 var
   Primus = require('primus')
@@ -12,10 +15,11 @@ var
   port = 8844 ;443
   connection-counter = 0
   connections = {}
-
-var get-connection-id = #->
-  connection-counter ++
-  "connection-" + connection-counter
+  get-connection-id = #->
+    connection-counter ++
+    "connection-" + connection-counter
+  message-counter = 0
+  interval-message-counter = 0
 
 var server = http.createServer
   (request, response) ->
@@ -55,7 +59,10 @@ var handle-connection = spark ->
 
   spark.on
     "data"
-    #-> spark.write #it
+    #->
+      message-counter ++
+      interval-message-counter ++
+      spark.write #it
 
   spark.on
     'end'
@@ -68,5 +75,11 @@ primus.save 'primus.js'
 primus.on
   "connection"
   handle-connection
+
+set-interval
+  #->
+    console.log ("Handled " + interval-message-counter + " messages (total " + message-counter + ")")
+    interval-message-counter = 0
+  1000
 
 server.listen (args.port || port)
