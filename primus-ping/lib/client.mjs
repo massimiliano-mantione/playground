@@ -122,6 +122,6 @@ set-timeout
         console.error (JSON.stringify log)
         console.log "Done."
         process.exit(0)
-      3000
+      finalwait
   duration * 1000
 
