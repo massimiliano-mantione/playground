@@ -10,6 +10,7 @@ var transform-args = (ast, ctx) -> ast
 
 var Sym = Immutable.Record {
   id: ":error"
+  block: null
 
 }
 
@@ -66,6 +67,9 @@ Sym.tokens = {
   ":str": Sym {
       id: ":str"
     }
+  ":doc": Sym {
+      id: ":doc"
+    }
 
   ; The following tokens are produced by the grouping pass
   "()": Sym {
@@ -77,14 +81,14 @@ Sym.tokens = {
   "{}": Sym {
       id: "{}"
     }
-  "hblk": Sym {
-      id: "(,)"
-    }
   "vblk": Sym {
       id: "(|)"
     }
-  ":doc": Sym {
-      id: ":doc"
+  "lblk": Sym {
+      id: "(,)"
+    }
+  "hblk": Sym {
+      id: "(#)"
     }
 }
 
