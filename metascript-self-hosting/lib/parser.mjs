@@ -127,7 +127,7 @@ Parser.prototype.load-string = (source, source-name) ->
   this.with-mutations #->
     if (typeof source-name != "string")
       source-name = "[unknown]"
-    #it..source ..! (Immutable.List (source.split '\n'))
+    #it..source ..! (Immutable.List (source.split "\n"))
     #it..current-line ..! 0
     #it..current-column ..! 0
 

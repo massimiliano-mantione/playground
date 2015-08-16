@@ -10,10 +10,10 @@
   "license": "ISC",
   "devDependencies": {
     "chai": "^1.10.0",
-    "gulp": "^3.8.10",
+    "gulp": "^3.8.11",
     "mjs-check": "0.0.3",
     "gulp-mjs-conventions": "0.0.4",
-    "meta-script": "0.0.45",
+    "meta-script": "0.0.47",
     "webpack": "^1.4.15"
   },
   "dependencies": {

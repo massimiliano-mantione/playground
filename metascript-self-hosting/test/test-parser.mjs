@@ -18,7 +18,7 @@ describe
       "Can load a string of source code and iterate its lines"
       #->
         expect(p.source.size).to.equal 0
-        p.load-string <=.. 'my\nsource\ncode'
+        p.load-string <=.. "my\nsource\ncode"
         expect(p.source.to-array()).to.eql(['my', 'source', 'code'])
         expect(p.current-line).to.equal 0
         expect(p.current-column).to.equal 0
@@ -37,19 +37,19 @@ describe
     it
       "Gives an error when attempting to load a non existent file"
       #->
-        p.load-file <=.. 'my\nsource\ncode'
+        p.load-file <=.. "my\nsource\ncode"
         expect(p.has-errors).to.eql true
         expect(p.errors..[0].message.index-of "no such file" >= 0).to.eql true
 
     it
       "Handles comments"
       #->
-        p.load-string <=.. ''.concat
-          '; I am a comment\n'
-          '  abc\n'
-          '  def ; I am another comment\n'
-          '  ; I am an indented comment\n'
-          '  ghi'
+        p.load-string <=.. "".concat
+          "; I am a comment\n"
+          "  abc\n"
+          "  def ; I am another comment\n"
+          "  ; I am an indented comment\n"
+          "  ghi"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -64,22 +64,22 @@ describe
     it
       "Handles docs"
       #->
-        p.load-string <=.. ''.concat
-          ';;; I am a doc\n'
-          ';;;\n'
-          '  abc\n'
-          '  def ; I am another comment\n'
-          '  ;;;;;\n'
-          '  I am an indented doc\n'
-          '  and I have a second line\n'
-          '  and a third;;;;\n'
-          '  ghi\n'
-          ';;;;; I am a stranger doc\n'
-          ';;;;; I go on\n'
-          'and I ;;; doc ;;; myself\n'
-          ';;;; for real ;;;\n'
-          ';;;\n'
-          '  jkl'
+        p.load-string <=.. "".concat
+          ";;; I am a doc\n"
+          ";;;\n"
+          "  abc\n"
+          "  def ; I am another comment\n"
+          "  ;;;;;\n"
+          "  I am an indented doc\n"
+          "  and I have a second line\n"
+          "  and a third;;;;\n"
+          "  ghi\n"
+          ";;;;; I am a stranger doc\n"
+          ";;;;; I go on\n"
+          "and I ;;; doc ;;; myself\n"
+          ";;;; for real ;;;\n"
+          ";;;\n"
+          "  jkl"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -105,7 +105,7 @@ describe
     it
       "Can tokenize tags"
       #->
-        p.load-string <=.. 'my source code'
+        p.load-string <=.. "my source code"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -116,7 +116,7 @@ describe
     it
       "Can tokenize numbers"
       #->
-        p.load-string <=.. 'numbers 1 2 3.5 123.456e-3 123.456e11'
+        p.load-string <=.. "numbers 1 2 3.5 123.456e-3 123.456e11"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -130,7 +130,7 @@ describe
     it
       "Can tokenize empty strings"
       #->
-        p.load-string <=.. '1 "" 2 \'\' 3'
+        p.load-string <=.. "1 \"\" 2 '' 3"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -143,7 +143,7 @@ describe
     it
       "Can tokenize simple strings"
       #->
-        p.load-string <=.. '1 "abc" 2 \'def\' 3'
+        p.load-string <=.. "1 \"abc\" 2 'def' 3"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -158,13 +158,13 @@ describe
     it
       "Can tokenize multiline interpolated strings"
       #->
-        p.load-string <=.. ''.concat
-          '1 """abcdef\n'
-          '     ghijkl\n'
-          '     zz\tz\x2Fzz\123z\u0AFAzz\n'
-          '     mnopqr\n'
-          'stuvwx\n'
-          '  """ 2'
+        p.load-string <=.. "".concat
+          "1 \"\"\"abcdef\n"
+          "     ghijkl\n"
+          "     zz\tz\x2Fzz\123z\u0AFAzz\n"
+          "     mnopqr\n"
+          "stuvwx\n"
+          "  \"\"\" 2"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
@@ -180,7 +180,7 @@ describe
     it
       "Can tokenize multiline literal strings"
       #->
-        p.load-string <=.. ''.concat
+        p.load-string <=.. "".concat
           "1 '''abcdef\n"
           "     ghijkl\n"
           "     mnopqr\n"
@@ -201,7 +201,7 @@ describe
     it
       "Produces source location info"
       #->
-        p.load-string <=.. 'a 12\n  b cde'
+        p.load-string <=.. "a 12\n  b cde"
         p.tokenize-source <=.. ()
         expect(p.root.array-dump()).to.eql([':root',
           [ [ ':l', 0 ],
