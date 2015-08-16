@@ -17,7 +17,7 @@
     "webpack": "^1.4.15"
   },
   "dependencies": {
-    "immutable": "^3.4.1",
+    "immutable": "^3.7.4",
     "transducers.js": "^0.2.3",
     "underscore-transducer": "^0.3.2"
   }
