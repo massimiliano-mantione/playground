@@ -83,7 +83,7 @@ tokenizers..base ..= p ->
     else if (("()[]{},".index-of cc) >= 0)
       ; Delimiter
       text = cc
-      token = p.new-delimiter-token (text, c)
+      token = p.new-delimiter-token (Sym.tokens[text], c)
     else if (cc == ";")
       ; Comment
       text = rest

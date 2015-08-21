@@ -18,7 +18,9 @@ describe
       "Can load a string of source code and iterate its lines"
       #->
         expect(p.source.size).to.equal 0
+        expect(p.source-empty?).to.equal true
         p.load-string <=.. "my\nsource\ncode"
+        expect(p.source-empty?).to.equal false
         expect(p.source.to-array()).to.eql(['my', 'source', 'code'])
         expect(p.current-line).to.equal 0
         expect(p.current-column).to.equal 0

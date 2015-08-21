@@ -85,7 +85,7 @@ Sym.tokens = {
       id: "(|)"
     }
   "lblk": Sym {
-      id: "(,)"
+      id: "(-)"
     }
   "hblk": Sym {
       id: "(#)"

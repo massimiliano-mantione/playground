@@ -7,10 +7,7 @@ var Sym = require './sym'
 var Ast = require './ast'
 var Msg = require './msg'
 var Loc = require './loc'
-
-var GrouperState = Immutable.Record {
-
-}
+var GrouperState = require './grouper'
 
 var Parser = Immutable.Record {
   source: Immutable.List()
@@ -220,7 +217,7 @@ Parser.prototype.tokenize-line = #->
   var p = this
   if (p.done?)
     return p.error "No more lines to parse"
-  if (p.line-done?)
+  if (p.line-done? && p.source-line.lengh > 0)
     return p.error "Current line has already been parsed"
   ; We should check if making p mutable improves performance
   while (! p.line-done?)
